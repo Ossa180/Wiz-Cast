@@ -32,7 +32,10 @@ class ActivityHome : AppCompatActivity() {
         binding.navView.setupWithNavController(navController)
         appBarConfiguration = AppBarConfiguration(navController.graph, binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        binding.toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.menu_open_24)
+        // to avoid the overlap of the menu bar
+//        navController.addOnDestinationChangedListener { _, _, _ ->
+//            binding.toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.menu_open_24)
+//        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
