@@ -6,4 +6,6 @@
     <string name="onBoard2">On Boarding 2</string>
     <string name="onBoard3">on Board 3</string>
     <string name="wizcast">Wiz-Cast</string>
+    <string name="next">Next</string>
+    <string name="finish">Finish</string>
 </resources>
