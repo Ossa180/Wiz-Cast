@@ -24,7 +24,7 @@ class SplashFragment : Fragment() {
             // after 3 seconds navigate to the fragment
            // findNavController().navigate(R.id.navigate_splashFragment_to_homeFragment)
             findNavController().navigate(R.id.action_splashFragment_to_onBoardingFragment)
-        }, 7000)
+        }, 5000)
 //        val view = inflater.inflate(R.layout.fragment_splash, container, false)
         binding = FragmentSplashBinding.inflate(layoutInflater, container, false)
 
