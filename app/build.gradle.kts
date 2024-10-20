@@ -76,7 +76,13 @@ dependencies {
     // View model
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
+    // for glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+
+    // for picasso
+    implementation("com.squareup.picasso:picasso:2.8")
+
     // Kotlin + coroutines
     val work_version = "2.9.1"
     implementation("androidx.work:work-runtime-ktx:$work_version")

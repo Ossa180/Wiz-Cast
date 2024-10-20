@@ -55,6 +55,7 @@
         android:text="@string/description"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/tvTemp"
         app:layout_constraintStart_toStartOf="@+id/tvTemp"
         app:layout_constraintTop_toBottomOf="@+id/tvTemp" />
 
@@ -135,10 +136,11 @@
         android:id="@+id/tvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:text="TextView"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/textView11"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvDate"
         tools:text="@tools:sample/date/hhmm" />
 
@@ -148,7 +150,7 @@
         android:layout_height="52dp"
         android:layout_marginTop="24dp"
         android:src="@drawable/humidity"
-        app:layout_constraintEnd_toStartOf="@+id/tvSunRise"
+        app:layout_constraintStart_toStartOf="@+id/tvTemp"
         app:layout_constraintTop_toBottomOf="@+id/tvSunRise" />
 
     <TextView
