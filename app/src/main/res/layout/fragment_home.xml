@@ -85,8 +85,8 @@
 
     <ImageView
         android:id="@+id/imgIcon"
-        android:layout_width="43dp"
-        android:layout_height="30dp"
+        android:layout_width="46dp"
+        android:layout_height="37dp"
         android:layout_marginStart="16dp"
         android:src="@drawable/abc"
         app:layout_constraintStart_toEndOf="@+id/tvDesc"

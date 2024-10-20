@@ -19,7 +19,6 @@ import com.example.wiz_cast.R
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModel
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModelFactory
 import com.example.wiz_cast.databinding.FragmentHomeBinding
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -77,8 +76,9 @@ class HomeFragment : Fragment() {
     private fun updateUI(weather: CurrentWeather) {
         binding.tvDesc.text = weather.weather[0].description
         val iconUrl = "https://openweathermap.org/img/wn/${weather.weather[0].icon}.png"
-        //Glide.with(this).load(iconUrl).error(R.drawable.abc).into(binding.imgIcon)
-        Picasso.get().load(iconUrl).error(R.drawable.abc).into(binding.imgIcon)
+        val testIcon = "https://openweathermap.org/img/wn/10d@2x.png"
+        Glide.with(this).load(testIcon).into(binding.imgIcon)
+        //Picasso.get().load(iconUrl).error(R.drawable.abc).into(binding.imgIcon)
 
         binding.tvTemp.text = "${weather.main.temp}°"
         binding.tvPressure.text = "${weather.main.pressure}"

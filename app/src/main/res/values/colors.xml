@@ -9,4 +9,5 @@
     <color name="blue">#FF0000FF</color>
     <color name="cyan">#FF00FFFF</color>
     <color name="light_gray">#627e75</color>
+    <color name="fillCard">#6679747E</color>
 </resources>
