@@ -22,4 +22,6 @@
     <string name="humidity">Humidity</string>
     <string name="randomnumber">60</string>
     <string name="wind">Wind</string>
+    <string name="pressure">Pressure</string>
+    <string name="clouds">Clouds</string>
 </resources>
