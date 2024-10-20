@@ -144,16 +144,36 @@
         app:layout_constraintTop_toTopOf="@+id/tvDate"
         tools:text="@tools:sample/date/hhmm" />
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="40dp"
-        android:layout_height="52dp"
-        android:layout_marginTop="24dp"
-        android:src="@drawable/humidity"
-        app:layout_constraintStart_toStartOf="@+id/tvTemp"
-        app:layout_constraintTop_toBottomOf="@+id/tvSunRise" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_weather_details"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="@color/fillCard"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSunSet">
 
-    <TextView
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="15dp">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="40dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="64dp"
+                android:layout_marginTop="40dp"
+                android:src="@drawable/humidity"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvSunRise" />
+
+            <TextView
         android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -267,5 +287,8 @@
         app:layout_constraintStart_toStartOf="@+id/textView19"
         app:layout_constraintTop_toBottomOf="@+id/textView19"
         tools:text="@string/randomnumber" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
