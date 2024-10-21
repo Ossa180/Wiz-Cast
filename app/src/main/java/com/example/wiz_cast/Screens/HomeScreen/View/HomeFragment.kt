@@ -11,9 +11,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.wiz_cast.Model.Pojo.CurrentWeather
 import com.example.wiz_cast.Model.Pojo.FiveDaysWeather
+import com.example.wiz_cast.Model.Pojo.Item0
 import com.example.wiz_cast.Model.Repository.WeatherRepository
 import com.example.wiz_cast.Network.FiveDayForecastState
 import com.example.wiz_cast.Network.RetrofitHelper
@@ -37,6 +39,7 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewModel: HomeViewModel
     private lateinit var connectivityReceiver: ConnectivityReceiver
+    private lateinit var hourlyAdapter: HourlyAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -155,6 +158,15 @@ class HomeFragment : Fragment() {
         return format.format(date)
     }
 
+    // Setup the hourly recycler view
+    private fun setupHourlyRecyclerView(hourlyData: List<Item0>) {
+        hourlyAdapter = HourlyAdapter(hourlyData)
+        binding.recyclerHourly.apply {
+            adapter = hourlyAdapter
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        }
+    }
+
     private fun fetchCityName(lat: Double, lon: Double) {
         val apiKey = getString(R.string.api_key)
         lifecycleScope.launch(Dispatchers.IO) {
@@ -204,12 +216,16 @@ class HomeFragment : Fragment() {
         requireContext().unregisterReceiver(connectivityReceiver)
     }
 
-    private fun logForecastData(fiveDaysWeather: FiveDaysWeather) {
-        fiveDaysWeather.list.forEach { item ->
-            Log.d(
-                "HomeFragment",
-                "Forecast time: ${item.dt_txt}, Temp: ${item.main.temp}, Weather: ${item.weather[0].description}"
-            )
+    // Inside forecast data observer, update the RecyclerView
+    private fun logForecastData(forecast: FiveDaysWeather) {
+        val hourlyData = forecast.list // Assuming 'list' contains hourly forecast
+
+        // Log each hourly forecast
+        hourlyData.forEach { item ->
+            Log.d("HomeFragment", "Forecast time: ${item.dt_txt}, Temp: ${item.main.temp}, Weather: ${item.weather[0].description}")
         }
+
+        // Pass the hourly data to the adapter to display in the RecyclerView
+        setupHourlyRecyclerView(hourlyData)
     }
 }
