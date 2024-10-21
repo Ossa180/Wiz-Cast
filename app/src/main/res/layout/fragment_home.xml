@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
+    android:layout_height="match_parent"
     tools:context=".Screens.HomeScreen.View.HomeFragment">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottiecloudloading"
+        android:layout_width="330dp"
+        android:layout_height="228dp"
+        android:layout_gravity="center"
+        android:visibility="visible"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/cloadloading" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mainContentGroup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
 
     <TextView
         android:id="@+id/textView3"
@@ -18,6 +34,8 @@
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
 
     <TextView
         android:id="@+id/tvCity"
@@ -54,7 +72,8 @@
         android:layout_marginTop="8dp"
         android:text="@string/description"
         android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/tvTemp"
         app:layout_constraintStart_toStartOf="@+id/tvTemp"
         app:layout_constraintTop_toBottomOf="@+id/tvTemp" />
@@ -87,10 +106,10 @@
         android:id="@+id/imgIcon"
         android:layout_width="46dp"
         android:layout_height="37dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:src="@drawable/abc"
-        app:layout_constraintStart_toEndOf="@+id/tvDesc"
-        app:layout_constraintTop_toTopOf="@+id/tvDesc" />
+        app:layout_constraintBottom_toBottomOf="@+id/tvDesc"
+        app:layout_constraintStart_toEndOf="@+id/tvDesc" />
 
     <TextView
         android:id="@+id/textView9"
@@ -168,10 +187,12 @@
                 android:layout_width="40dp"
                 android:layout_height="52dp"
                 android:layout_marginStart="64dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:src="@drawable/humidity"
+                app:layout_constraintBottom_toTopOf="@+id/textView13"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvSunRise" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
         android:id="@+id/textView13"
@@ -291,4 +312,6 @@
 
     </androidx.cardview.widget.CardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

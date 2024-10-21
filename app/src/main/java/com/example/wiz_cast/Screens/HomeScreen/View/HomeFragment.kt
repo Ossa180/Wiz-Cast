@@ -1,5 +1,7 @@
 package com.example.wiz_cast.Screens.HomeScreen.View
 
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +20,7 @@ import com.example.wiz_cast.Network.WeatherState
 import com.example.wiz_cast.R
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModel
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModelFactory
+import com.example.wiz_cast.Utils.ConnectivityReceiver
 import com.example.wiz_cast.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +34,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewModel: HomeViewModel
+    private lateinit var connectivityReceiver: ConnectivityReceiver
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,20 +53,36 @@ class HomeFragment : Fragment() {
         val factory = HomeViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
+        // Register the connectivity receiver
+        connectivityReceiver = ConnectivityReceiver {
+            viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key), units = "metric", lang = "en")
+        }
+        requireContext().registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+
+
+        binding.lottiecloudloading.setAnimation(R.raw.cloadloading)
+        binding.lottiecloudloading.playAnimation()
+
         // Observe the weatherState using StateFlow
         lifecycleScope.launch {
             viewModel.weatherState.collect { state ->
                 when (state) {
                     is WeatherState.Loading -> {
                         Log.d("HomeFragment", "Loading weather data...")
+                        binding.lottiecloudloading.visibility = View.VISIBLE
+                        binding.mainContentGroup.visibility = View.GONE
                     }
                     is WeatherState.Success -> {
                         Log.d("HomeFragment", "Weather data received: ${state.weather}")
+                        binding.lottiecloudloading.visibility = View.GONE
+                        binding.mainContentGroup.visibility = View.VISIBLE
                         updateUI(state.weather)
                     }
                     is WeatherState.Error -> {
                         Log.d("HomeFragment", "Error: ${state.message}")
                         Toast.makeText(requireContext(), "Failed to fetch weather: ${state.message}", Toast.LENGTH_SHORT).show()
+                        binding.lottiecloudloading.visibility = View.VISIBLE
+                        binding.mainContentGroup.visibility = View.GONE
                     }
                 }
             }
@@ -75,10 +95,12 @@ class HomeFragment : Fragment() {
 
     private fun updateUI(weather: CurrentWeather) {
         binding.tvDesc.text = weather.weather[0].description
-        val iconUrl = "https://openweathermap.org/img/wn/${weather.weather[0].icon}.png"
-        val testIcon = "https://openweathermap.org/img/wn/10d@2x.png"
-        Glide.with(this).load(testIcon).into(binding.imgIcon)
+//        val iconUrl = "https://openweathermap.org/img/wn/${weather.weather[0].icon}.png"
+//        val testIcon = "https://openweathermap.org/img/wn/10d@2x.png"
+//        Glide.with(this).load(testIcon).into(binding.imgIcon)
         //Picasso.get().load(iconUrl).error(R.drawable.abc).into(binding.imgIcon)
+        val weatherIconResId = getCustomIconForWeather(weather.weather[0].icon)
+        binding.imgIcon.setImageResource(weatherIconResId)
 
         binding.tvTemp.text = "${weather.main.temp}°"
         binding.tvPressure.text = "${weather.main.pressure}"
@@ -135,5 +157,25 @@ class HomeFragment : Fragment() {
         return format.format(date)
     }
 
+    // for description, to avoid fetching problem
+    private fun getCustomIconForWeather(iconCode: String): Int {
+        return when (iconCode) {
+            "01d", "01n" -> R.drawable.ic_clear_sky
+            "02d", "02n" -> R.drawable.ic_few_cloud
+            "03d", "03n" -> R.drawable.ic_scattered_clouds
+            "04d", "04n" -> R.drawable.ic_broken_clouds
+            "09d", "09n" -> R.drawable.ic_shower_rain
+            "10d", "10n" -> R.drawable.ic_rain
+            "11d", "11n" -> R.drawable.ic_thunderstorm
+            "13d", "13n" -> R.drawable.ic_snow
+            "50d", "50n" -> R.drawable.ic_mist
+            else -> R.drawable.ic_clear_sky
+        }
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Unregister the connectivity receiver to prevent memory leaks
+        requireContext().unregisterReceiver(connectivityReceiver)
+    }
 }
