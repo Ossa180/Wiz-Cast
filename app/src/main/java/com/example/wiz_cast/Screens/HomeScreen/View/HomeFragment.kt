@@ -58,7 +58,7 @@ class HomeFragment : Fragment() {
         // Register the connectivity receiver
         connectivityReceiver = ConnectivityReceiver {
             viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key), units = "metric", lang = "en")
-            viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key))
+            viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key), units = "metric", lang = "en")
 
         }
         requireContext().registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
@@ -115,7 +115,7 @@ class HomeFragment : Fragment() {
         // Fetch weather data with example parameters
         val apiKey = getString(R.string.api_key)
         viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = apiKey, units = "metric", lang = "en")
-        viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = apiKey)
+        viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = apiKey, units = "metric", lang = "en")
     }
 
     private fun updateUI(weather: CurrentWeather) {

@@ -27,9 +27,9 @@ class WeatherRepository(
         emit(WeatherState.Error("An error occurred: ${exception.localizedMessage}"))
     }
 
-    fun fetchFiveDayForecast(lat: Double, lon: Double, apiKey: String): Flow<FiveDayForecastState> = flow {
+    fun fetchFiveDayForecast(lat: Double, lon: Double, apiKey: String, units: String, lang: String): Flow<FiveDayForecastState> = flow {
         emit(FiveDayForecastState.Loading) // Emit loading state
-        val response = remoteDataSource.fetchFiveDayForecast(lat, lon, apiKey)
+        val response = remoteDataSource.fetchFiveDayForecast(lat, lon, apiKey,units, lang)
 
         if (response.isSuccessful) {
             response.body()?.let { fiveDaysWeather ->

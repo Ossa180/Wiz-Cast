@@ -18,9 +18,11 @@ class WeatherRemoteDataSourceImpl(private val weatherService: WeatherService) : 
     override suspend fun fetchFiveDayForecast(
         lat: Double,
         lon: Double,
-        appid: String
+        appid: String,
+        units: String,
+        lang: String
     ): Response<FiveDaysWeather> {
-        return weatherService.getFiveDayForecast(lat, lon, appid)
+        return weatherService.getFiveDayForecast(lat, lon, appid, units, lang)
     }
 }
 
