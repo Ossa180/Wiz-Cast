@@ -99,20 +99,24 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.fiveDayForecastState.collect { state ->
                 when (state) {
-                    is FiveDayForecastState.Loading -> { // Corrected to use FiveDayForecastState
+                    is FiveDayForecastState.Loading -> {
                         Log.d("HomeFragment", "Loading 5-day weather forecast...")
                     }
-                    is FiveDayForecastState.Success -> { // Corrected to use FiveDayForecastState
+                    is FiveDayForecastState.Success -> {
                         Log.d("HomeFragment", "5-day forecast data received: ${state.weather}")
-                        // You can call a method here to update the UI with the forecast data if needed
-                        logForecastData(state.weather) // Log the forecast data for now
+                        viewModel.weatherState.value.let { weatherState ->
+                            if (weatherState is WeatherState.Success) {
+                                logForecastData(state.weather, weatherState.weather)
+                            }
+                        }
                     }
-                    is FiveDayForecastState.Error -> { // Corrected to use FiveDayForecastState
+                    is FiveDayForecastState.Error -> {
                         Log.d("HomeFragment", "Error fetching 5-day forecast: ${state.message}")
                     }
                 }
             }
         }
+
 
 
         // Fetch weather data with example parameters
@@ -217,15 +221,23 @@ class HomeFragment : Fragment() {
     }
 
     // Inside forecast data observer, update the RecyclerView
-    private fun logForecastData(forecast: FiveDaysWeather) {
-        val hourlyData = forecast.list // Assuming 'list' contains hourly forecast
+    private fun logForecastData(forecast: FiveDaysWeather, currentWeather: CurrentWeather) {
+        val timezoneOffset = currentWeather.timezone * 1000L
+        val currentTime = System.currentTimeMillis() + timezoneOffset
 
-        // Log each hourly forecast
-        hourlyData.forEach { item ->
+        val futureForecast = forecast.list.filter { item ->
+            val forecastTimeMillis = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                .parse(item.dt_txt)?.time ?: 0 // compare with current time
+            forecastTimeMillis >= currentTime
+        }
+
+        // Log filtered forecast data
+        futureForecast.forEach { item ->
             Log.d("HomeFragment", "Forecast time: ${item.dt_txt}, Temp: ${item.main.temp}, Weather: ${item.weather[0].description}")
         }
 
-        // Pass the hourly data to the adapter to display in the RecyclerView
-        setupHourlyRecyclerView(hourlyData)
+        // Pass the filtered future forecast data to the adapter
+        setupHourlyRecyclerView(futureForecast)
     }
+
 }
