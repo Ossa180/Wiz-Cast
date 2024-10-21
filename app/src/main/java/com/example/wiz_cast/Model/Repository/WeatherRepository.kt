@@ -1,5 +1,7 @@
 package com.example.wiz_cast.Model.Repository
 
+import com.example.wiz_cast.Model.Pojo.FiveDaysWeather
+import com.example.wiz_cast.Network.FiveDayForecastState
 import com.example.wiz_cast.Network.WeatherRemoteDataSource
 import com.example.wiz_cast.Network.WeatherState
 import kotlinx.coroutines.flow.Flow
@@ -24,4 +26,20 @@ class WeatherRepository(
     }.catch { exception ->
         emit(WeatherState.Error("An error occurred: ${exception.localizedMessage}"))
     }
+
+    fun fetchFiveDayForecast(lat: Double, lon: Double, apiKey: String): Flow<FiveDayForecastState> = flow {
+        emit(FiveDayForecastState.Loading) // Emit loading state
+        val response = remoteDataSource.fetchFiveDayForecast(lat, lon, apiKey)
+
+        if (response.isSuccessful) {
+            response.body()?.let { fiveDaysWeather ->
+                emit(FiveDayForecastState.Success(fiveDaysWeather))
+            } ?: emit(FiveDayForecastState.Error("No forecast data available"))
+        } else {
+            emit(FiveDayForecastState.Error("Error fetching forecast: ${response.message()}"))
+        }
+    }.catch { exception ->
+        emit(FiveDayForecastState.Error("An error occurred: ${exception.localizedMessage}"))
+    }
+
 }

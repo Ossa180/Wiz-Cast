@@ -13,7 +13,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.wiz_cast.Model.Pojo.CurrentWeather
+import com.example.wiz_cast.Model.Pojo.FiveDaysWeather
 import com.example.wiz_cast.Model.Repository.WeatherRepository
+import com.example.wiz_cast.Network.FiveDayForecastState
 import com.example.wiz_cast.Network.RetrofitHelper
 import com.example.wiz_cast.Network.WeatherRemoteDataSourceImpl
 import com.example.wiz_cast.Network.WeatherState
@@ -56,6 +58,8 @@ class HomeFragment : Fragment() {
         // Register the connectivity receiver
         connectivityReceiver = ConnectivityReceiver {
             viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key), units = "metric", lang = "en")
+            viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key))
+
         }
         requireContext().registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
@@ -88,9 +92,30 @@ class HomeFragment : Fragment() {
             }
         }
 
+        // Observe the *** fiveDayForecastState *** using StateFlow
+        lifecycleScope.launch {
+            viewModel.fiveDayForecastState.collect { state ->
+                when (state) {
+                    is FiveDayForecastState.Loading -> { // Corrected to use FiveDayForecastState
+                        Log.d("HomeFragment", "Loading 5-day weather forecast...")
+                    }
+                    is FiveDayForecastState.Success -> { // Corrected to use FiveDayForecastState
+                        Log.d("HomeFragment", "5-day forecast data received: ${state.weather}")
+                        // You can call a method here to update the UI with the forecast data if needed
+                        logForecastData(state.weather) // Log the forecast data for now
+                    }
+                    is FiveDayForecastState.Error -> { // Corrected to use FiveDayForecastState
+                        Log.d("HomeFragment", "Error fetching 5-day forecast: ${state.message}")
+                    }
+                }
+            }
+        }
+
+
         // Fetch weather data with example parameters
         val apiKey = getString(R.string.api_key)
         viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = apiKey, units = "metric", lang = "en")
+        viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = apiKey)
     }
 
     private fun updateUI(weather: CurrentWeather) {
@@ -177,5 +202,14 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         // Unregister the connectivity receiver to prevent memory leaks
         requireContext().unregisterReceiver(connectivityReceiver)
+    }
+
+    private fun logForecastData(fiveDaysWeather: FiveDaysWeather) {
+        fiveDaysWeather.list.forEach { item ->
+            Log.d(
+                "HomeFragment",
+                "Forecast time: ${item.dt_txt}, Temp: ${item.main.temp}, Weather: ${item.weather[0].description}"
+            )
+        }
     }
 }

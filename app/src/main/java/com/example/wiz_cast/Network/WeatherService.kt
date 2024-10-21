@@ -1,6 +1,7 @@
 package com.example.wiz_cast.Network
 
 import com.example.wiz_cast.Model.Pojo.CurrentWeather
+import com.example.wiz_cast.Model.Pojo.FiveDaysWeather
 import com.example.wiz_cast.Model.Pojo.Sys
 import retrofit2.Response
 import retrofit2.http.GET
@@ -22,4 +23,11 @@ interface WeatherService {
         @Query("lon") lon: Double,
         @Query("appid") appid: String
     ): Response<List<Sys>>
+
+    @GET("forecast?")
+    suspend fun getFiveDayForecast(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("appid") appid: String
+    ): Response<FiveDaysWeather>
 }
