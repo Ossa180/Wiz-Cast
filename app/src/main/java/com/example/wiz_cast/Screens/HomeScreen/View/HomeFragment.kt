@@ -1,6 +1,8 @@
 package com.example.wiz_cast.Screens.HomeScreen.View
 
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.location.Location
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
@@ -25,6 +27,7 @@ import com.example.wiz_cast.R
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModel
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModelFactory
 import com.example.wiz_cast.Utils.ConnectivityReceiver
+import com.example.wiz_cast.Utils.LocationHelper
 import com.example.wiz_cast.databinding.FiveDaysDialogBinding
 import com.example.wiz_cast.databinding.FragmentHomeBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -44,6 +47,7 @@ class HomeFragment : Fragment() {
     private lateinit var hourlyAdapter: HourlyAdapter
     private lateinit var sheetBinding: FiveDaysDialogBinding
     private lateinit var dialog : BottomSheetDialog
+    private lateinit var locationHelper: LocationHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +59,14 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Set up the location helper
+        locationHelper = LocationHelper(requireContext())
+        if (locationHelper.checkLocationPermission()) {
+            fetchLocationData()
+        } else {
+            locationHelper.requestLocationPermission(requireActivity())
+        }
 
         // Set up the 5-day forecast dialog
         sheetBinding = FiveDaysDialogBinding.inflate(layoutInflater)
@@ -129,8 +141,6 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-
-
 
         // Fetch weather data with example parameters
         val apiKey = getString(R.string.api_key)
@@ -293,6 +303,46 @@ class HomeFragment : Fragment() {
     }
 
 
+    // Fetch location data
+    private fun fetchLocationData() {
+        locationHelper.getCurrentLocation { location: Location? ->
+            location?.let {
+                val latitude = it.latitude
+                val longitude = it.longitude
+                // Log the current latitude and longitude
+                Log.d("**Location**", "Location fetched - Latitude: $latitude, Longitude: $longitude")
 
+                // Now fetch the weather data with the actual coordinates
+                fetchWeatherData(latitude, longitude)
+            } ?: run {
+                // Handle error if location is null
+                Toast.makeText(requireContext(), "Failed to get location", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Function to fetch weather and forecast data
+    private fun fetchWeatherData(lat: Double, lon: Double) {
+        val apiKey = getString(R.string.api_key)
+        viewModel.fetchWeather(lat = lat, lon = lon, appid = apiKey, units = "metric", lang = "en")
+        viewModel.fetchFiveDayForecast(lat = lat, lon = lon, appid = apiKey, units = "metric", lang = "en")
+    }
+
+    // Handle permission result
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == LocationHelper.LOCATION_REQUEST_CODE &&
+            grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            fetchLocationData()
+        } else {
+            Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
 
 }
