@@ -7,6 +7,7 @@ import com.example.wiz_cast.Network.FiveDayForecastState
 import com.example.wiz_cast.Network.WeatherState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
@@ -18,6 +19,7 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
 
     fun fetchWeather(lat: Double, lon: Double, appid: String, units: String, lang: String) {
         viewModelScope.launch {
+            _weatherState.debounce(5000) // Wait for 5 seconds before making another request
             repository.fetchWeather(lat, lon, appid, units, lang).collect { state ->
                 _weatherState.value = state
             }

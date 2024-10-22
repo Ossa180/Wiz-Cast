@@ -86,10 +86,10 @@ class HomeFragment : Fragment() {
                         updateUI(state.weather)
                     }
                     is WeatherState.Error -> {
-                        Log.d("HomeFragment", "Error: ${state.message}")
+                        Log.d("HomeFragment : Weather state: ", "Error: ${state.message}")
                         Toast.makeText(requireContext(), "Failed to fetch weather: ${state.message}", Toast.LENGTH_SHORT).show()
-                        binding.lottiecloudloading.visibility = View.VISIBLE
-                        binding.mainContentGroup.visibility = View.GONE
+                        binding.lottiecloudloading.visibility = View.GONE
+                        binding.mainContentGroup.visibility = View.VISIBLE // show latest data
                     }
                 }
             }

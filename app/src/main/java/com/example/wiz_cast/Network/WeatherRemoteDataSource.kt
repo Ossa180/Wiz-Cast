@@ -10,8 +10,7 @@ interface WeatherRemoteDataSource {
                              units: String, lang: String): Response<CurrentWeather>
 
     suspend fun fetchFiveDayForecast(
-        lat: Double,
-        lon: Double,
+        lat: Double, lon: Double,
         appid: String = R.string.api_key.toString(),
         units: String, lang: String
     ): Response<FiveDaysWeather>

@@ -4,9 +4,12 @@ import com.example.wiz_cast.Model.Pojo.FiveDaysWeather
 import com.example.wiz_cast.Network.FiveDayForecastState
 import com.example.wiz_cast.Network.WeatherRemoteDataSource
 import com.example.wiz_cast.Network.WeatherState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retryWhen
+import java.io.IOException
 
 class WeatherRepository(
     private val remoteDataSource: WeatherRemoteDataSource
@@ -22,6 +25,11 @@ class WeatherRepository(
             } ?: emit(WeatherState.Error("No data available"))
         } else {
             emit(WeatherState.Error("Error fetching weather: ${response.message()}"))
+        }
+    }.retryWhen { cause, attempt ->
+        // Retry up to 3 times if the cause is a network-related issue
+        (cause is IOException && attempt < 3).also {
+            if (it) delay(2000) // Wait for 2 seconds before retrying
         }
     }.catch { exception ->
         emit(WeatherState.Error("An error occurred: ${exception.localizedMessage}"))

@@ -15,8 +15,9 @@ class ConnectivityReceiver(private val onNetworkAvailable: () -> Unit) : Broadca
 
     private fun isNetworkAvailable(context: Context): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork
+        val network = connectivityManager.activeNetwork // current active network
         val capabilities = connectivityManager.getNetworkCapabilities(network)
+        // return true if network is connected
         return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 }
