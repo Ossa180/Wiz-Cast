@@ -24,4 +24,5 @@
     <string name="wind">Wind</string>
     <string name="pressure">Pressure</string>
     <string name="clouds">Clouds</string>
+    <string name="Fivedays">Next 5 Days</string>
 </resources>

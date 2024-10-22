@@ -25,7 +25,9 @@ import com.example.wiz_cast.R
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModel
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModelFactory
 import com.example.wiz_cast.Utils.ConnectivityReceiver
+import com.example.wiz_cast.databinding.FiveDaysDialogBinding
 import com.example.wiz_cast.databinding.FragmentHomeBinding
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,6 +42,8 @@ class HomeFragment : Fragment() {
     private lateinit var viewModel: HomeViewModel
     private lateinit var connectivityReceiver: ConnectivityReceiver
     private lateinit var hourlyAdapter: HourlyAdapter
+    private lateinit var sheetBinding: FiveDaysDialogBinding
+    private lateinit var dialog : BottomSheetDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +55,15 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Set up the 5-day forecast dialog
+        sheetBinding = FiveDaysDialogBinding.inflate(layoutInflater)
+        dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetTheme)
+        dialog.setContentView(sheetBinding.root)
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation // for animation
+        binding.btnOpenSheet.setOnClickListener {
+            dialog.show()
+        }
 
         // Set up ViewModel
         val remoteDataSource = WeatherRemoteDataSourceImpl(RetrofitHelper.apiService)
@@ -162,6 +175,8 @@ class HomeFragment : Fragment() {
         return format.format(date)
     }
 
+
+
     // Setup the hourly recycler view
     private fun setupHourlyRecyclerView(hourlyData: List<Item0>) {
         hourlyAdapter = HourlyAdapter(hourlyData)
@@ -214,12 +229,17 @@ class HomeFragment : Fragment() {
         }
     }
 
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         // Unregister the connectivity receiver to prevent memory leaks
         requireContext().unregisterReceiver(connectivityReceiver)
     }
 
+    /********************************************/
+    /****** Five Days - 3 Hours Fetching ********/
+    /********************************************/
     // Inside forecast data observer, update the RecyclerView
     private fun logForecastData(forecast: FiveDaysWeather, currentWeather: CurrentWeather) {
         val timezoneOffset = currentWeather.timezone * 1000L
@@ -227,7 +247,7 @@ class HomeFragment : Fragment() {
 
         val futureForecast = forecast.list.filter { item ->
             val forecastTimeMillis = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                .parse(item.dt_txt)?.time ?: 0 // compare with current time
+                .parse(item.dt_txt)?.time ?: 0
             forecastTimeMillis >= currentTime
         }
 
@@ -236,8 +256,43 @@ class HomeFragment : Fragment() {
             Log.d("HomeFragment", "Forecast time: ${item.dt_txt}, Temp: ${item.main.temp}, Weather: ${item.weather[0].description}")
         }
 
-        // Pass the filtered future forecast data to the adapter
+        // Pass the filtered future forecast data to the hourly adapter (unchanged for current day)
         setupHourlyRecyclerView(futureForecast)
+
+        // Get a single forecast for each day for the 5-day forecast
+        val uniqueDayForecast = getUniqueDayForecast(futureForecast)
+
+        // Setup RecyclerView in the BottomSheetDialog with the unique day forecast
+        setupFiveDayRecyclerView(uniqueDayForecast)
     }
+
+    // Function to get a single forecast entry per day
+    private fun getUniqueDayForecast(forecastList: List<Item0>): List<Item0> {
+        val dailyForecastMap = mutableMapOf<String, Item0>()
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        // Iterate through the forecastList and store one forecast entry per day
+        forecastList.forEach { item ->
+            val dateKey = sdf.format(SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(item.dt_txt)!!)
+            if (!dailyForecastMap.containsKey(dateKey)) {
+                dailyForecastMap[dateKey] = item // Store the first forecast entry of each day
+            }
+        }
+
+        return dailyForecastMap.values.toList() // Return the filtered list of forecasts (one per day)
+    }
+
+    // Setup RecyclerView for 5-day forecast in the BottomSheetDialog
+    private fun setupFiveDayRecyclerView(forecastList: List<Item0>) {
+        val dialogAdapter = DialogAdapter(forecastList)
+        sheetBinding.recycler5Days.apply {
+            adapter = dialogAdapter
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        }
+    }
+
+
+
 
 }

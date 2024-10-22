@@ -31,7 +31,7 @@ class HourlyAdapter(private val hourlyList: List<Item0>) :
         holder.binding.tvHour.text = hour
         holder.binding.tvHourTemp.text = "${hourlyData.main.temp}°"
 
-        // Set weather icon using a helper method
+        // Set weather icon
         val weatherIconResId = getCustomIconForWeather(hourlyData.weather[0].icon)
         holder.binding.imgdesc.setImageResource(weatherIconResId)
     }
@@ -40,7 +40,7 @@ class HourlyAdapter(private val hourlyList: List<Item0>) :
         return hourlyList.size
     }
 
-    // This is your helper method for mapping weather icon codes to drawable resources
+    //  mapping weather icon codes
     private fun getCustomIconForWeather(iconCode: String): Int {
         return when (iconCode) {
             "01d", "01n" -> R.drawable.ic_clear_sky

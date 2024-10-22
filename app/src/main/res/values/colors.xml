@@ -7,6 +7,7 @@
     <color name="red">#FFFF0000</color>
     <color name="green">#FF00FF00</color>
     <color name="blue">#FF0000FF</color>
+    <color name="drak_blue">#FF00008B</color>
     <color name="cyan">#FF00FFFF</color>
     <color name="light_gray">#627e75</color>
     <color name="fillCard">#6679747E</color>
