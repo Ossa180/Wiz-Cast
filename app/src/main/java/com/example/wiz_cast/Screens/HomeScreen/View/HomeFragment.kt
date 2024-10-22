@@ -324,8 +324,11 @@ class HomeFragment : Fragment() {
     // Function to fetch weather and forecast data
     private fun fetchWeatherData(lat: Double, lon: Double) {
         val apiKey = getString(R.string.api_key)
+        // Log the current location being used to fetch weather and forecast
+        Log.d("**Location 5 **", "Fetching weather and 5-day forecast for Latitude: $lat, Longitude: $lon")
         viewModel.fetchWeather(lat = lat, lon = lon, appid = apiKey, units = "metric", lang = "en")
         viewModel.fetchFiveDayForecast(lat = lat, lon = lon, appid = apiKey, units = "metric", lang = "en")
+
     }
 
     // Handle permission result
