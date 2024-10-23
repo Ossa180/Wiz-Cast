@@ -168,7 +168,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="130dp"
             app:cardBackgroundColor="@color/fillCard"
             app:cardCornerRadius="28dp"
             app:cardElevation="0dp"
@@ -325,11 +325,11 @@
             android:id="@+id/btnOpenSheet"
             android:layout_width="302dp"
             android:layout_height="115dp"
-            android:layout_marginTop="18dp"
+            android:layout_marginBottom="4dp"
             android:src="@drawable/moredaysbutton"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/card_weather_details"
-            app:layout_constraintStart_toStartOf="@+id/card_weather_details"
-            app:layout_constraintTop_toBottomOf="@+id/card_weather_details" />
+            app:layout_constraintStart_toStartOf="@+id/card_weather_details" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

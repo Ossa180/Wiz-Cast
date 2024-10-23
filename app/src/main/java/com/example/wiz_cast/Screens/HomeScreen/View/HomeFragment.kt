@@ -85,9 +85,9 @@ class HomeFragment : Fragment() {
 
         // Register the connectivity receiver
         connectivityReceiver = ConnectivityReceiver {
-            viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key), units = "metric", lang = "en")
-            viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key), units = "metric", lang = "en")
-
+            //viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key), units = "metric", lang = "en")
+            //viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = getString(R.string.api_key), units = "metric", lang = "en")
+            fetchLocationData()
         }
         requireContext().registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
@@ -143,17 +143,13 @@ class HomeFragment : Fragment() {
         }
 
         // Fetch weather data with example parameters
-        val apiKey = getString(R.string.api_key)
-        viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = apiKey, units = "metric", lang = "en")
-        viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = apiKey, units = "metric", lang = "en")
+//        val apiKey = getString(R.string.api_key)
+//        viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = apiKey, units = "metric", lang = "en")
+//        viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = apiKey, units = "metric", lang = "en")
     }
 
     private fun updateUI(weather: CurrentWeather) {
         binding.tvDesc.text = weather.weather[0].description
-//        val iconUrl = "https://openweathermap.org/img/wn/${weather.weather[0].icon}.png"
-//        val testIcon = "https://openweathermap.org/img/wn/10d@2x.png"
-//        Glide.with(this).load(testIcon).into(binding.imgIcon)
-        //Picasso.get().load(iconUrl).error(R.drawable.abc).into(binding.imgIcon)
         val weatherIconResId = getCustomIconForWeather(weather.weather[0].icon)
         binding.imgIcon.setImageResource(weatherIconResId)
 
@@ -316,7 +312,7 @@ class HomeFragment : Fragment() {
                 fetchWeatherData(latitude, longitude)
             } ?: run {
                 // Handle error if location is null
-                Toast.makeText(requireContext(), "Failed to get location", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to get location. Please enable GPS.", Toast.LENGTH_SHORT).show()
             }
         }
     }
