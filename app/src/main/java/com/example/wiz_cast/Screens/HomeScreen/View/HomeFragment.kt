@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.wiz_cast.Model.Pojo.CurrentWeather
@@ -26,6 +27,7 @@ import com.example.wiz_cast.Network.WeatherState
 import com.example.wiz_cast.R
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModel
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModelFactory
+import com.example.wiz_cast.Screens.MapScreen.View.MapFragment
 import com.example.wiz_cast.Utils.ConnectivityReceiver
 import com.example.wiz_cast.Utils.LocationHelper
 import com.example.wiz_cast.databinding.FiveDaysDialogBinding
@@ -310,6 +312,15 @@ class HomeFragment : Fragment() {
 
                 // Now fetch the weather data with the actual coordinates
                 fetchWeatherData(latitude, longitude)
+                // Navigate to the MapFragment and pass the latitude and longitude as arguments
+                binding.btnGoToMap.setOnClickListener {
+                    val bundle = Bundle().apply {
+                        putDouble("LATITUDE", latitude)
+                        putDouble("LONGITUDE", longitude)
+                    }
+                    findNavController().navigate(R.id.action_homeFragment_to_mapFragment, bundle)
+                }
+
             } ?: run {
                 // Handle error if location is null
                 Toast.makeText(requireContext(), "Failed to get location. Please enable GPS.", Toast.LENGTH_SHORT).show()
