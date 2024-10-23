@@ -17,6 +17,7 @@ import com.example.wiz_cast.Model.Pojo.CurrentWeather
 import com.example.wiz_cast.Model.Pojo.FiveDaysWeather
 import com.example.wiz_cast.Model.Pojo.Item0
 import com.example.wiz_cast.Model.Repository.WeatherRepository
+import com.example.wiz_cast.Network.FiveDayForecastState
 import com.example.wiz_cast.Network.RetrofitHelper
 import com.example.wiz_cast.Network.WeatherRemoteDataSourceImpl
 import com.example.wiz_cast.Network.WeatherState
@@ -72,11 +73,19 @@ class DetailsFragment : Fragment() {
         if (latitude != null && longitude != null) {
             fetchWeatherDetails(latitude, longitude)
         }
+
+        // Set up the 5-day forecast dialog
+        sheetBinding = FiveDaysDialogBinding.inflate(layoutInflater)
+        dialog = BottomSheetDialog(requireContext(), R.style.BottomSheetTheme)
+        dialog.setContentView(sheetBinding.root)
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation // for animation
+        binding.btnOpenSheet.setOnClickListener {
+            dialog.show()
+        }
     }
 
     private fun fetchWeatherDetails(lat: Double, lon: Double) {
         val apiKey = getString(R.string.api_key)
-
         // Observe the weather state
         lifecycleScope.launch {
             viewModel.weatherState.collect { state ->
@@ -94,10 +103,33 @@ class DetailsFragment : Fragment() {
                 }
             }
         }
+        // Observe the *** fiveDayForecastState *** using StateFlow
+        lifecycleScope.launch {
+            viewModel.fiveDayForecastState.collect { state ->
+                when (state) {
+                    is FiveDayForecastState.Loading -> {
+                        Log.d("HomeFragment", "Loading 5-day weather forecast...")
+                    }
+                    is FiveDayForecastState.Success -> {
+                        Log.d("HomeFragment", "5-day forecast data received: ${state.weather}")
+                        viewModel.weatherState.value.let { weatherState ->
+                            if (weatherState is WeatherState.Success) {
+                                logForecastData(state.weather, weatherState.weather)
+                            }
+                        }
+                    }
+                    is FiveDayForecastState.Error -> {
+                        Log.d("HomeFragment", "Error fetching 5-day forecast: ${state.message}")
+                    }
+                }
+            }
+        }
 
         // Fetch the weather data for the location
         viewModel.fetchWeather(lat, lon, apiKey, "metric", "en")
+        viewModel.fetchFiveDayForecast(lat, lon, apiKey, "metric", "en")
     }
+
 
 
     private fun updateUI(weather: CurrentWeather) {
