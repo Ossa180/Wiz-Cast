@@ -25,7 +25,6 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
             }
         }
     }
-
     fun fetchFiveDayForecast(lat: Double, lon: Double, appid: String, units: String, lang: String) {
         viewModelScope.launch {
             repository.fetchFiveDayForecast(lat, lon, appid, units, lang).collect { state ->
