@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
-        android:name="com.example.wiz_cast.FavoriteFragment"
+        android:name="com.example.wiz_cast.Screens.FavoriteScreen.View.FavoriteFragment"
         android:label="fragment_favorite"
         tools:layout="@layout/fragment_favorite" >
         <action

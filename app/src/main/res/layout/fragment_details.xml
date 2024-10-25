@@ -331,6 +331,18 @@
             app:layout_constraintEnd_toEndOf="@+id/card_weather_details"
             app:layout_constraintStart_toStartOf="@+id/card_weather_details" />
 
+        <CheckBox
+            android:id="@+id/cbHeart"
+            android:layout_width="56dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="92dp"
+            android:layout_marginEnd="4dp"
+            android:button="@drawable/selector_wishlist_item"
+            android:textColor="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:useMaterialThemeColors="false" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

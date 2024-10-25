@@ -1,5 +1,7 @@
 package com.example.wiz_cast.Model.Repository
 
+import WeatherLocalDataSource
+import com.example.wiz_cast.Model.DataBase.FavoriteLocation
 import com.example.wiz_cast.Model.Pojo.FiveDaysWeather
 import com.example.wiz_cast.Network.FiveDayForecastState
 import com.example.wiz_cast.Network.WeatherRemoteDataSource
@@ -12,7 +14,8 @@ import kotlinx.coroutines.flow.retryWhen
 import java.io.IOException
 
 class WeatherRepository(
-    private val remoteDataSource: WeatherRemoteDataSource
+    private val remoteDataSource: WeatherRemoteDataSource,
+    private val localDataSource: WeatherLocalDataSource
 ) {
     // Fetch weather data as a Flow, emitting different states
     fun fetchWeather(lat: Double, lon: Double, appid: String, units: String, lang: String): Flow<WeatherState> = flow {
@@ -48,6 +51,17 @@ class WeatherRepository(
         }
     }.catch { exception ->
         emit(FiveDayForecastState.Error("An error occurred: ${exception.localizedMessage}"))
+    }
+
+    // Local data source functions
+    fun getFavoriteLocations(): Flow<List<FavoriteLocation>> = localDataSource.getFavoriteLocations()
+
+    suspend fun addFavoriteLocation(location: FavoriteLocation) {
+        localDataSource.saveFavoriteLocation(location)
+    }
+
+    suspend fun removeFavoriteLocation(locationId: Int) {
+        localDataSource.deleteFavoriteLocation(locationId)
     }
 
 }

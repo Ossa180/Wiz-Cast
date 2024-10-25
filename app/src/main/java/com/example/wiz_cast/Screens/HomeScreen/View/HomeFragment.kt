@@ -16,6 +16,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.wiz_cast.Model.DataBase.WeatherDao
+import com.example.wiz_cast.Model.DataBase.WeatherDatabase
+import com.example.wiz_cast.Model.DataBase.WeatherLocalDataSourceImpl
 import com.example.wiz_cast.Model.Pojo.CurrentWeather
 import com.example.wiz_cast.Model.Pojo.FiveDaysWeather
 import com.example.wiz_cast.Model.Pojo.Item0
@@ -50,6 +53,7 @@ class HomeFragment : Fragment() {
     private lateinit var sheetBinding: FiveDaysDialogBinding
     private lateinit var dialog : BottomSheetDialog
     private lateinit var locationHelper: LocationHelper
+    lateinit var weatherDao: WeatherDao
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,9 +83,13 @@ class HomeFragment : Fragment() {
             dialog.show()
         }
 
+        // Initialize weatherDao
+        val database = WeatherDatabase.getInstance(requireContext())
+        weatherDao = database.weatherDao()
         // Set up ViewModel
         val remoteDataSource = WeatherRemoteDataSourceImpl(RetrofitHelper.apiService)
-        val repository = WeatherRepository(remoteDataSource)
+        val localDataSource = WeatherLocalDataSourceImpl(weatherDao) // initialize with your DAO
+        val repository = WeatherRepository(remoteDataSource, localDataSource)
         val factory = HomeViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
