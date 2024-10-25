@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.wiz_cast.Model.DataBase.FavoriteLocation
 import com.example.wiz_cast.Model.DataBase.WeatherDao
 import com.example.wiz_cast.Model.DataBase.WeatherDatabase
 import com.example.wiz_cast.Model.DataBase.WeatherLocalDataSourceImpl
@@ -43,14 +44,13 @@ import java.util.Locale
 
 class DetailsFragment : Fragment() {
 
-    lateinit var viewModel: HomeViewModel // Reuse HomeViewModel
+    lateinit var viewModel: HomeViewModel
     lateinit var binding : FragmentDetailsBinding
     private lateinit var hourlyAdapter: HourlyAdapter
     private lateinit var sheetBinding: FiveDaysDialogBinding
     private lateinit var dialog : BottomSheetDialog
     private lateinit var locationHelper: LocationHelper
     lateinit var weatherDao: WeatherDao
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,6 +90,21 @@ class DetailsFragment : Fragment() {
         binding.btnOpenSheet.setOnClickListener {
             dialog.show()
         }
+
+        // add weather to favorites
+        binding.cbHeart.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Ensure weather data has been fetched successfully before adding to favorites
+                val currentWeather = viewModel.weatherState.value
+                if (currentWeather is WeatherState.Success) {
+                    addToFavorites(currentWeather.weather)
+                } else {
+                    Toast.makeText(requireContext(), "Weather data not available", Toast.LENGTH_SHORT).show()
+                    binding.cbHeart.isChecked = false
+                }
+            }
+        }
+
     }
 
     private fun fetchWeatherDetails(lat: Double, lon: Double) {
@@ -137,8 +152,6 @@ class DetailsFragment : Fragment() {
         viewModel.fetchWeather(lat, lon, apiKey, "metric", "en")
         viewModel.fetchFiveDayForecast(lat, lon, apiKey, "metric", "en")
     }
-
-
 
     private fun updateUI(weather: CurrentWeather) {
         binding.tvDesc.text = weather.weather[0].description
@@ -292,14 +305,6 @@ class DetailsFragment : Fragment() {
 
                 // Now fetch the weather data with the actual coordinates
                 fetchWeatherData(latitude, longitude)
-                // Navigate to the MapFragment and pass the latitude and longitude as arguments
-//                binding.btnGoToMap.setOnClickListener {
-//                    val bundle = Bundle().apply {
-//                        putDouble("LATITUDE", latitude)
-//                        putDouble("LONGITUDE", longitude)
-//                    }
-//                    findNavController().navigate(R.id.action_homeFragment_to_mapFragment, bundle)
-//                }
             } ?: run {
                 // Handle error if location is null
                 Toast.makeText(requireContext(), "Failed to get location. Please enable GPS.", Toast.LENGTH_SHORT).show()
@@ -333,4 +338,19 @@ class DetailsFragment : Fragment() {
         }
     }
 
+    private fun addToFavorites(weather: CurrentWeather) {
+        lifecycleScope.launch {
+            val favorite = FavoriteLocation(
+                name = weather.name,
+                latitude = weather.coord.lat,
+                longitude = weather.coord.lon,
+                temperature = weather.main.temp,
+                description = weather.weather[0].description,
+                weatherIcon = weather.weather[0].icon
+                // add other necessary fields from CurrentWeather
+            )
+            weatherDao.insertFavoriteLocation(favorite)
+            Toast.makeText(requireContext(), "${weather.name} added to favorites", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
