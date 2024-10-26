@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -91,20 +92,36 @@ class DetailsFragment : Fragment() {
             dialog.show()
         }
 
-        // add weather to favorites
-        binding.cbHeart.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                // Ensure weather data has been fetched successfully before adding to favorites
-                val currentWeather = viewModel.weatherState.value
-                if (currentWeather is WeatherState.Success) {
-                    addToFavorites(currentWeather.weather)
+        // Initial check to see if location is already a favorite
+        checkIfFavorite()
+//        binding.cbHeart.setOnCheckedChangeListener { _, isChecked ->
+//            latitude?.let { lat ->
+//                longitude?.let { lon ->
+//                    if (isChecked) {
+//                        saveLocationToFavorites(lat, lon)
+//                    } else {
+//                        removeLocationFromFavorites(lat, lon)
+//                    }
+//                    checkIfFavorite() // Refresh checkbox state after update
+//                }
+//            }
+//        }
+    }
+    // Define listener separately for easier management
+    private val heartCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+        val latitude = arguments?.getDouble("LATITUDE")
+        val longitude = arguments?.getDouble("LONGITUDE")
+        latitude?.let { lat ->
+            longitude?.let { lon ->
+                if (isChecked) {
+                    saveLocationToFavorites(lat, lon)
                 } else {
-                    Toast.makeText(requireContext(), "Weather data not available", Toast.LENGTH_SHORT).show()
-                    binding.cbHeart.isChecked = false
+                    removeLocationFromFavorites(lat, lon)
                 }
+                // Refresh checkbox state to confirm changes in the database
+                checkIfFavorite()
             }
         }
-
     }
 
     private fun fetchWeatherDetails(lat: Double, lon: Double) {
@@ -147,7 +164,6 @@ class DetailsFragment : Fragment() {
                 }
             }
         }
-
         // Fetch the weather data for the location
         viewModel.fetchWeather(lat, lon, apiKey, "metric", "en")
         viewModel.fetchFiveDayForecast(lat, lon, apiKey, "metric", "en")
@@ -157,20 +173,15 @@ class DetailsFragment : Fragment() {
         binding.tvDesc.text = weather.weather[0].description
         val weatherIconResId = getCustomIconForWeather(weather.weather[0].icon)
         binding.imgIcon.setImageResource(weatherIconResId)
-
         binding.tvTemp.text = "${weather.main.temp}°"
         binding.tvPressure.text = "${weather.main.pressure}"
         binding.tvHumidity.text = "${weather.main.humidity}%"
-
         binding.tvClouds.text = "${weather.clouds.all}%"
         binding.tvWind.text = "${weather.wind.speed}m/s"
-
         binding.tvSunRise.text = "Sunrise: ${formatUnixTime(weather.sys.sunrise, weather.timezone)}"
         binding.tvSunSet.text = "Sunset: ${formatUnixTime(weather.sys.sunset, weather.timezone)}"
-
         binding.tvCity.text = weather.name
         binding.tvTime.text = formatTimeFromTimezone(weather.timezone)
-
         binding.tvDate.text = "${
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
             Date()
@@ -252,18 +263,14 @@ class DetailsFragment : Fragment() {
                 .parse(item.dt_txt)?.time ?: 0
             forecastTimeMillis >= currentTime
         }
-
         // Log filtered forecast data
         futureForecast.forEach { item ->
             Log.d("HomeFragment", "Forecast time: ${item.dt_txt}, Temp: ${item.main.temp}, Weather: ${item.weather[0].description}")
         }
-
         // Pass the filtered future forecast data to the hourly adapter (unchanged for current day)
         setupHourlyRecyclerView(futureForecast)
-
         // Get a single forecast for each day for the 5-day forecast
         val uniqueDayForecast = getUniqueDayForecast(futureForecast)
-
         // Setup RecyclerView in the BottomSheetDialog with the unique day forecast
         setupFiveDayRecyclerView(uniqueDayForecast)
     }
@@ -338,19 +345,46 @@ class DetailsFragment : Fragment() {
         }
     }
 
-    private fun addToFavorites(weather: CurrentWeather) {
-        lifecycleScope.launch {
-            val favorite = FavoriteLocation(
-                name = weather.name,
-                latitude = weather.coord.lat,
-                longitude = weather.coord.lon,
-                temperature = weather.main.temp,
-                description = weather.weather[0].description,
-                weatherIcon = weather.weather[0].icon
-                // add other necessary fields from CurrentWeather
-            )
-            weatherDao.insertFavoriteLocation(favorite)
-            Toast.makeText(requireContext(), "${weather.name} added to favorites", Toast.LENGTH_SHORT).show()
+    private fun checkIfFavorite() {
+        val cityName = binding.tvCity.text.toString().trim()
+        lifecycleScope.launch(Dispatchers.IO) {
+            // Query to check if location is in favorites by city name
+            val isFavorite = weatherDao.isLocationFavorite(cityName) > 0
+            withContext(Dispatchers.Main) {
+                // Temporarily remove listener to avoid triggering it while updating state
+                binding.cbHeart.setOnCheckedChangeListener(null)
+                binding.cbHeart.isChecked = isFavorite
+                // Reattach the listener after setting the checkbox state
+                binding.cbHeart.setOnCheckedChangeListener(heartCheckedChangeListener)
+            }
+        }
+    }
+
+    // Save favorite location to database if not already present
+    private fun saveLocationToFavorites(lat: Double, lon: Double) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val cityName = binding.tvCity.text.toString().trim()
+            val isFavorite = weatherDao.isLocationFavorite(cityName) > 0
+
+            if (!isFavorite) {
+                val favoriteLocation = FavoriteLocation(
+                    latitude = lat,
+                    longitude = lon,
+                    name = cityName,
+                    description = binding.tvDesc.text.toString(),
+                    temperature = binding.tvTemp.text.toString().replace("°", "").toDoubleOrNull() ?: 0.0,
+                    weatherIcon = binding.imgIcon.toString()
+                )
+                weatherDao.insertFavoriteLocation(favoriteLocation)
+            }
+        }
+    }
+
+    // Remove favorite location from database by city name
+    private fun removeLocationFromFavorites(lat: Double, lon: Double) {
+        val cityName = binding.tvCity.text.toString().trim()
+        lifecycleScope.launch(Dispatchers.IO) {
+            weatherDao.removeFavoriteLocationByName(cityName)
         }
     }
 }

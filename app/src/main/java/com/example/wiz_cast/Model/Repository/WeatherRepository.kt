@@ -60,8 +60,8 @@ class WeatherRepository(
         localDataSource.saveFavoriteLocation(location)
     }
 
-    suspend fun removeFavoriteLocation(locationId: Int) {
-        localDataSource.deleteFavoriteLocation(locationId)
+    suspend fun removeFavoriteLocation(lat: Double, lon: Double){
+        localDataSource.deleteFavoriteLocation(lat, lon)
     }
 
 }

@@ -36,9 +36,9 @@ class FavoriteViewModel(
         }
     }
 
-    fun removeFavoriteLocation(locationId: Int) {
+    fun removeFavoriteLocation(lat: Double, lon: Double) {
         viewModelScope.launch {
-            repository.removeFavoriteLocation(locationId)
+            repository.removeFavoriteLocation(lat, lon)
             fetchFavoriteLocations() // Refresh list after removal
         }
     }

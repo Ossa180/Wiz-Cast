@@ -4,5 +4,5 @@ import kotlinx.coroutines.flow.Flow
 interface WeatherLocalDataSource {
     suspend fun saveFavoriteLocation(favoriteLocation: FavoriteLocation)
     fun getFavoriteLocations(): Flow<List<FavoriteLocation>>
-    suspend fun deleteFavoriteLocation(id: Int)
+    suspend fun deleteFavoriteLocation(lat: Double, lon: Double)
 }

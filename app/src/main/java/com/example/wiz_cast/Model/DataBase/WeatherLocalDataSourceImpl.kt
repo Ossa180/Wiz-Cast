@@ -13,7 +13,7 @@ class WeatherLocalDataSourceImpl(private val weatherDao: WeatherDao) : WeatherLo
         return weatherDao.getAllFavoriteLocations()
     }
 
-    override suspend fun deleteFavoriteLocation(id: Int) {
-        weatherDao.removeFavoriteLocation(id)
+    override suspend fun deleteFavoriteLocation(lat: Double, lon: Double) {
+        weatherDao.removeFavoriteLocation(lat, lon)
     }
 }
