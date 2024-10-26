@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".OnBoardingScreen.SplashFragment">
 
@@ -25,8 +26,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="104dp"
         android:layout_marginTop="-30dp"
-        android:fontFamily="@font/young_serif"
+        android:fontFamily="@font/alegreya_extrabold"
         android:text="@string/wizcast"
+        android:textColor="#FAFAFA"
         android:textSize="34sp"
         android:textStyle="bold|italic"
         app:layout_constraintStart_toStartOf="@+id/lottieSuncloud"
