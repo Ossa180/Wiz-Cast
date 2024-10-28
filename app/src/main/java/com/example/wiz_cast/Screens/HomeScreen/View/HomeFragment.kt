@@ -93,6 +93,8 @@ class HomeFragment : Fragment() {
         val factory = HomeViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
+
+
         // Register the connectivity receiver
         connectivityReceiver = ConnectivityReceiver {
             fetchLocationData()

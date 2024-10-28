@@ -40,6 +40,7 @@
         android:layout_marginTop="80dp"
         android:fontFamily="@font/alegreya_extrabold"
         android:text="@string/finalsplash"
+        android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold"

@@ -21,7 +21,7 @@ class LocationHelper(private val context: Context) {
         const val LOCATION_REQUEST_CODE = 100
     }
 
-    // Method to check location permission
+    //check location permission
     fun checkLocationPermission(): Boolean {
         val coarseLocation = ContextCompat.checkSelfPermission(
             context,
@@ -35,7 +35,7 @@ class LocationHelper(private val context: Context) {
                 fineLocation == PackageManager.PERMISSION_GRANTED
     }
 
-    // Method to request location permissions
+    // request location permissions
     fun requestLocationPermission(activity: Activity) {
         ActivityCompat.requestPermissions(
             activity,
@@ -47,7 +47,7 @@ class LocationHelper(private val context: Context) {
         )
     }
 
-    // Method to get the current location
+    //  get the current location
     @SuppressLint("MissingPermission")
     fun getCurrentLocation(onLocationReceived: (Location?) -> Unit) {
         fusedLocationClient.lastLocation.addOnCompleteListener { task: Task<Location> ->

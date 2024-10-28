@@ -10,30 +10,32 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wiz_cast.Model.DataBase.FavoriteLocation
 import com.example.wiz_cast.R
+import com.example.wiz_cast.databinding.CardFavoriteListBinding
 
 
-class FavoriteAdapter : ListAdapter<FavoriteLocation, FavoriteAdapter.FavoriteViewHolder>(FavoriteDiffCallback()) {
+class FavoriteAdapter(
+    private val onItemClick: (FavoriteLocation) -> Unit
+) : ListAdapter<FavoriteLocation, FavoriteAdapter.FavoriteViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.card_favorite_list, parent, false)
-        return FavoriteViewHolder(view)
+        val binding = CardFavoriteListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return FavoriteViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int) {
-        val favoriteLocation = getItem(position)
-        holder.bind(favoriteLocation)
+        val item = getItem(position)
+        holder.bind(item)
     }
 
-    inner class FavoriteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvFavTemp: TextView = itemView.findViewById(R.id.tvFavTemp)
-        private val tvFavCity: TextView = itemView.findViewById(R.id.tvFavCity)
-        private val imgFavIcon: ImageView = itemView.findViewById(R.id.imgFavIcon)
-
+    inner class FavoriteViewHolder(private val binding: CardFavoriteListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(location: FavoriteLocation) {
-            tvFavTemp.text = "${location.temperature}°"
-            tvFavCity.text = location.name
-            // Assuming you have a utility function to load icons
-            imgFavIcon.setImageResource(getIconResource(location.weatherIcon))
+            binding.tvFavTemp.text = "${location.temperature}°"
+            binding.tvFavCity.text = location.name
+
+            binding.imgFavIcon.setImageResource(getIconResource(location.weatherIcon))
+            binding.root.setOnClickListener {
+                onItemClick(location)
+            }
         }
 
         private fun getIconResource(icon: String): Int {
@@ -52,13 +54,13 @@ class FavoriteAdapter : ListAdapter<FavoriteLocation, FavoriteAdapter.FavoriteVi
         }
     }
 
-    private class FavoriteDiffCallback : DiffUtil.ItemCallback<FavoriteLocation>() {
-        override fun areItemsTheSame(oldItem: FavoriteLocation, newItem: FavoriteLocation): Boolean {
-            return oldItem.name == newItem.name // or any unique field
-        }
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FavoriteLocation>() {
+            override fun areItemsTheSame(oldItem: FavoriteLocation, newItem: FavoriteLocation): Boolean =
+                oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: FavoriteLocation, newItem: FavoriteLocation): Boolean {
-            return oldItem == newItem
+            override fun areContentsTheSame(oldItem: FavoriteLocation, newItem: FavoriteLocation): Boolean =
+                oldItem == newItem
         }
     }
 }

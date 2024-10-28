@@ -49,13 +49,13 @@ class MapFragment : Fragment() {
 
         // Set map center and add marker
         setMapLocation(lat, lon)
-        Log.d("*****MAPLOCATION*****", " $lat, $lon")
+        Log.d("***** MAPLOCATION *****", " $lat, $lon")
 
         // Set up the GestureDetector for tap events
         gestureDetector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                 handleMapClick(e)
-                return true // Indicate that the event has been handled
+                return true // event has been handled
             }
         })
 
