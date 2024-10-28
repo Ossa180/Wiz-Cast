@@ -12,6 +12,11 @@
         android:icon="@drawable/twotone_favorite_24"
         android:title="@string/favorite" />
     <item
+        android:id="@+id/alarmFragment"
+        android:checkable="true"
+        android:icon="@drawable/alarm_24"
+        android:title="@string/alarm" />
+    <item
         android:id="@+id/settingFragment"
         android:checkable="true"
         android:icon="@drawable/baseline_settings_24"

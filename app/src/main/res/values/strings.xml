@@ -28,4 +28,5 @@
     <string name="saved">Saved Locations</string>
     <string name="dynamicweather">Dynamic Live Weather</string>
     <string name="finalsplash">We got you with Notifications for alert weather</string>
+    <string name="alarm">Alarm</string>
 </resources>

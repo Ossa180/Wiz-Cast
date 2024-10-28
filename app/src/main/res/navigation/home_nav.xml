@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_homeFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_alarmFragment2"
+            app:destination="@id/alarmFragment" />
     </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
@@ -55,5 +58,10 @@
         android:name="com.example.wiz_cast.Screens.DetailsFragment.View.DetailsFragment"
         android:label="fragment_details"
         tools:layout="@layout/fragment_details" />
+    <fragment
+        android:id="@+id/alarmFragment"
+        android:name="com.example.wiz_cast.Screens.AlarmScreen.View.AlarmFragment"
+        android:label="fragment_alarm"
+        tools:layout="@layout/fragment_alarm" />
 
 </navigation>
