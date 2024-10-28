@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.wiz_cast.Model.Alarm.Alarm
 import com.example.wiz_cast.Model.DataBase.WeatherDatabase
 import com.example.wiz_cast.R
@@ -23,6 +24,7 @@ import com.example.wiz_cast.Utils.Alarm.AlarmReceiver
 import com.example.wiz_cast.databinding.FragmentAlarmBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.Date
 
@@ -31,6 +33,7 @@ class AlarmFragment : Fragment() {
     private lateinit var binding: FragmentAlarmBinding
     private lateinit var alarmManager: AlarmManager
     private var selectedTimeInMillis: Long = 0L // Store selected alarm time
+    lateinit var alarmListAdapter: AlarmListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,11 +43,51 @@ class AlarmFragment : Fragment() {
 
         alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+        setupRecyclerView()
+        removeExpiredAlarmsAndLoad()
+        //loadAlarmsFromDatabase()
         binding.btnAddAlarm.setOnClickListener {
             showDatePicker()
         }
 
         return binding.root
+    }
+
+    private fun setupRecyclerView() {
+        alarmListAdapter = AlarmListAdapter(mutableListOf())
+        binding.recyclerViewAlarms.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewAlarms.adapter = alarmListAdapter
+    }
+
+
+    private fun removeExpiredAlarmsAndLoad() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = WeatherDatabase.getInstance(requireContext())
+            val currentTime = System.currentTimeMillis()
+
+            // Delete expired alarms
+            db.alarmDao().deleteExpiredAlarms(currentTime)
+
+            // Load remaining alarms
+            val alarmList = db.alarmDao().getAllAlarms()
+
+            withContext(Dispatchers.Main) {
+                alarmListAdapter.setData(alarmList)
+            }
+        }
+    }
+    private fun saveAlarmToDatabase(timeInMillis: Long) {
+        val alarm = Alarm(timeInMillis = timeInMillis)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = WeatherDatabase.getInstance(requireContext())
+            db.alarmDao().insertAlarm(alarm)
+
+            // Refresh list after adding a new alarm
+            val alarmList = db.alarmDao().getAllAlarms()
+            withContext(Dispatchers.Main) {
+                alarmListAdapter.setData(alarmList)
+            }
+        }
     }
 
     // Show Date Picker
@@ -56,8 +99,13 @@ class AlarmFragment : Fragment() {
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             showTimePicker(calendar)
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+
+        // Lock previous dates
+        datePicker.datePicker.minDate = System.currentTimeMillis()
+
         datePicker.show()
     }
+
 
     // Show Time Picker
     private fun showTimePicker(calendar: Calendar) {
@@ -97,13 +145,13 @@ class AlarmFragment : Fragment() {
         saveAlarmToDatabase(timeInMillis)
     }
 
-    private fun saveAlarmToDatabase(timeInMillis: Long) {
-        val alarm = Alarm(timeInMillis = timeInMillis)
-        lifecycleScope.launch(Dispatchers.IO) {
-            val db = WeatherDatabase.getInstance(requireContext())
-            db.alarmDao().insertAlarm(alarm)
-        }
-    }
+//    private fun saveAlarmToDatabase(timeInMillis: Long) {
+//        val alarm = Alarm(timeInMillis = timeInMillis)
+//        lifecycleScope.launch(Dispatchers.IO) {
+//            val db = WeatherDatabase.getInstance(requireContext())
+//            db.alarmDao().insertAlarm(alarm)
+//        }
+//    }
 
     private fun checkAndRequestExactAlarmPermission(timeInMillis: Long) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
