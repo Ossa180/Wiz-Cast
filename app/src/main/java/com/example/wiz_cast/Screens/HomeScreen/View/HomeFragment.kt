@@ -33,6 +33,7 @@ import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModelFactory
 import com.example.wiz_cast.Screens.MapScreen.View.MapFragment
 import com.example.wiz_cast.Utils.ConnectivityReceiver
 import com.example.wiz_cast.Utils.LocationHelper
+import com.example.wiz_cast.Utils.PreferencesHelper
 import com.example.wiz_cast.databinding.FiveDaysDialogBinding
 import com.example.wiz_cast.databinding.FragmentHomeBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -330,11 +331,20 @@ class HomeFragment : Fragment() {
     // Function to fetch weather and forecast data
     private fun fetchWeatherData(lat: Double, lon: Double) {
         val apiKey = getString(R.string.api_key)
+        val preferencesHelper = PreferencesHelper(requireContext())
+
+        // Retrieve saved preferences for language and units
+        val units = preferencesHelper.getUnits()
+        val language = preferencesHelper.getLanguage()
+
         // Log the current location being used to fetch weather and forecast
         Log.d("**Location 5 **", "Fetching weather and 5-day forecast for Latitude: $lat, Longitude: $lon")
-        viewModel.fetchWeather(lat = lat, lon = lon, appid = apiKey, units = "metric", lang = "en")
-        viewModel.fetchFiveDayForecast(lat = lat, lon = lon, appid = apiKey, units = "metric", lang = "en")
+
+        // Pass the retrieved settings to the ViewModel
+        viewModel.fetchWeather(lat = lat, lon = lon, appid = apiKey, units = units, lang = language)
+        viewModel.fetchFiveDayForecast(lat = lat, lon = lon, appid = apiKey, units = units, lang = language)
     }
+
 
     // Handle permission result
     override fun onRequestPermissionsResult(

@@ -29,4 +29,6 @@
     <string name="dynamicweather">Dynamic Live Weather</string>
     <string name="finalsplash">We got you with Notifications for alert weather</string>
     <string name="alarm">Alarm</string>
+    <string name="temprature">Temprature Unit</string>
+    <string name="Celesius">Celesius</string>
 </resources>

@@ -15,6 +15,13 @@ import com.example.wiz_cast.R
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        val alarmId = intent.getIntExtra("ALARM_ID", -1)
+
+        // Broadcast alarm trigger event
+        val updateIntent = Intent("com.example.wiz_cast.ALARM_TRIGGERED")
+        updateIntent.putExtra("ALARM_ID", alarmId)
+        context.sendBroadcast(updateIntent)
+
         showNotification(context)
     }
 
@@ -22,33 +29,30 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "alarm_channel"
 
-        // Create a notification channel for Android O and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(channelId, "Alarm Notification", NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Intent to open the app when the notification is tapped
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pendingIntent = PendingIntent.getActivity(
             context,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE // FLAG_IMMUTABLE here
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Create the notification
+        // intent to open the app when notification is clicked
         val notificationBuilder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.alarmweather)
-            .setContentTitle("Wiz-Cast")
-            .setContentText("Your alarm is going off!")
+            .setContentTitle("Alarm Notification")
+            .setContentText("Check Weather from WizCast")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-            .setDefaults(NotificationCompat.DEFAULT_ALL) // Ensures vibration and sound
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
 
-        // Show the notification
         notificationManager.notify(0, notificationBuilder.build())
     }
 }
