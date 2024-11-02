@@ -31,4 +31,8 @@
     <string name="alarm">Alarm</string>
     <string name="temprature">Temprature Unit</string>
     <string name="Celesius">Celesius</string>
+    <string name="tempSelect">Select Temperature Unit</string>
+    <string name="SelectLanguage">Select Language</string>
+    <string name="map">map</string>
+    <string name="forthislocation">This Location</string>
 </resources>

@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Wiz-Cast</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">مرحبًا بك في المقطع الفارغ</string>
+    <string name="onBoard1">شاشة الترحيب</string>
+    <string name="onBoard2">شاشة الترحيب</string>
+    <string name="onBoard3">شاشة الترحيب</string>
+    <string name="wizcast">Wiz-Cast</string>
+    <string name="next">التالي</string>
+    <string name="finish">إنهاء</string>
+    <string name="home">الرئيسية</string>
+    <string name="favorite">المفضلة</string>
+    <string name="setting">الإعدادات</string>
+    <string name="api_key">86278d2574ed52eb361602bc3e924865</string>
+    <string name="mylocation">موقعي</string>
+    <string name="city">المدينة</string>
+    <string name="description">مدن اخرى</string>
+    <string name="sunrise">شروق الشمس</string>
+    <string name="sunset">غروب الشمس</string>
+    <string name="today">اليوم</string>
+    <string name="time">الوقت</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="randomnumber">٦٠</string>
+    <string name="wind">الرياح</string>
+    <string name="pressure">الضغط</string>
+    <string name="clouds">الغيوم</string>
+    <string name="Fivedays">الخمسة أيام القادمة</string>
+    <string name="saved">المواقع المحفوظة</string>
+    <string name="dynamicweather">طقس حي ديناميكي</string>
+    <string name="finalsplash">نقدم لك إشعارات لأحوال الطقس</string>
+    <string name="alarm">التنبيه</string>
+    <string name="temprature">وحدة درجة الحرارة</string>
+    <string name="Celesius">سيليزيوس</string>
+    <string name="tempSelect">اختر وحدة درجة الحرارة</string>
+    <string name="SelectLanguage">اختر اللغة</string>
+    <string name="map">الخريطة</string>
+    <string name="forthislocation">لهذا الموقع</string>
+</resources>

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/onBoardingFragment"
         android:name="com.example.wiz_cast.OnBoardingScreen.OnBoardingFragment"
-        android:label="fragment_on_boarding"
+        android:label="@string/onBoard1"
         tools:layout="@layout/fragment_on_boarding" />
     <fragment
         android:id="@+id/splashFragment"

@@ -1,5 +1,6 @@
 package com.example.wiz_cast
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +13,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.wiz_cast.Utils.PreferencesHelper
 import com.example.wiz_cast.databinding.ActivityHomeBinding
+import java.util.Locale
 
 class ActivityHome : AppCompatActivity() {
 
@@ -36,10 +39,25 @@ class ActivityHome : AppCompatActivity() {
 //        navController.addOnDestinationChangedListener { _, _, _ ->
 //            binding.toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.menu_open_24)
 //        }
+
+        // Set the locale on app start
+        val preferencesHelper = PreferencesHelper(this)
+        val language = preferencesHelper.getLanguage()
+        setAppLocale(this, language)
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+    // Helper function to set the locale
+    fun setAppLocale(context: Context, languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = context.resources.configuration
+        config.setLocale(locale)
+        context.createConfigurationContext(config)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    }
 }
+

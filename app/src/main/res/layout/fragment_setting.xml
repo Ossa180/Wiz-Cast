@@ -1,38 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
     android:orientation="vertical"
     android:padding="16dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Temperature Unit"
-        android:textSize="18sp" />
+        android:fontFamily="@font/alegreya_extrabold"
+        android:text="@string/tempSelect"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <RadioGroup
         android:id="@+id/radioGroupUnits"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+
         android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/radioCelsius"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Celsius" />
+            android:buttonTint="#FFFFFF"
+
+            android:shadowColor="#FFFFFF"
+            android:text="Celsius"
+            android:textColor="#FFFFFF"
+            android:textColorHighlight="#FFFFFF"
+            android:textColorHint="#FFFFFF"
+            android:textColorLink="#FFFFFF" />
 
         <RadioButton
             android:id="@+id/radioFahrenheit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+
             android:text="Fahrenheit" />
 
         <RadioButton
             android:id="@+id/radioKelvin"
             android:layout_width="wrap_content"
+            android:textColor="#FFFFFF"
             android:layout_height="wrap_content"
             android:text="Kelvin" />
     </RadioGroup>
@@ -40,13 +57,18 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Language"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/alegreya_extrabold"
+        android:text="@string/SelectLanguage"
+        android:textColor="#FFFFFF"
         android:textSize="18sp"
-        android:layout_marginTop="16dp" />
+
+        android:textStyle="bold" />
 
     <RadioGroup
         android:id="@+id/radioGroupLanguage"
         android:layout_width="match_parent"
+        android:textColor="#FFFFFF"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
@@ -54,12 +76,14 @@
             android:id="@+id/radioEnglish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="English" />
 
         <RadioButton
             android:id="@+id/radioArabic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="Arabic" />
     </RadioGroup>
 </LinearLayout>

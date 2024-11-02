@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.wiz_cast.Screens.HomeScreen.View.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_favoriteFragment"
             app:destination="@id/favoriteFragment" />
@@ -26,8 +26,8 @@
     <fragment
         android:id="@+id/favoriteFragment"
         android:name="com.example.wiz_cast.Screens.FavoriteScreen.View.FavoriteFragment"
-        android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" >
+        android:label="@string/favorite"
+        tools:layout="@layout/fragment_favorite">
         <action
             android:id="@+id/action_favoriteFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
@@ -38,8 +38,8 @@
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.example.wiz_cast.SettingFragment"
-        android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" >
+        android:label="@string/setting"
+        tools:layout="@layout/fragment_setting">
         <action
             android:id="@+id/action_settingFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
@@ -47,8 +47,8 @@
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.wiz_cast.Screens.MapScreen.View.MapFragment"
-        android:label="fragment_map"
-        tools:layout="@layout/fragment_map" >
+        android:label="@string/map"
+        tools:layout="@layout/fragment_map">
         <action
             android:id="@+id/action_mapFragment_to_detailsFragment"
             app:destination="@id/detailsFragment" />
@@ -56,12 +56,12 @@
     <fragment
         android:id="@+id/detailsFragment"
         android:name="com.example.wiz_cast.Screens.DetailsFragment.View.DetailsFragment"
-        android:label="fragment_details"
+        android:label="@string/forthislocation"
         tools:layout="@layout/fragment_details" />
     <fragment
         android:id="@+id/alarmFragment"
         android:name="com.example.wiz_cast.Screens.AlarmScreen.View.AlarmFragment"
-        android:label="fragment_alarm"
+        android:label="@string/alarm"
         tools:layout="@layout/fragment_alarm" />
 
 </navigation>

@@ -5,6 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.content.Context
+import android.content.res.Configuration
+import java.util.Locale
 import com.example.wiz_cast.Utils.PreferencesHelper
 import com.example.wiz_cast.databinding.FragmentSettingBinding
 
@@ -50,6 +53,12 @@ class SettingFragment : Fragment() {
                 else -> "en"
             }
             preferencesHelper.setLanguage(language)
+
+            // Apply the language change
+            setAppLocale(requireContext(), language)
+
+            // Restart the activity to reflect the language change
+            requireActivity().recreate()
         }
 
         return binding.root
@@ -59,4 +68,12 @@ class SettingFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    fun setAppLocale(context: Context, languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.setLocale(locale)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    }
 }
+
