@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.fir.declarations.builder.buildScript
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -38,60 +40,79 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+
 }
 
 dependencies {
+    // Core libraries
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.play.services.location)
-    implementation(libs.play.services.maps)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-
-    // for lottie animation
-    implementation ("com.airbnb.android:lottie:6.1.0")
-    implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
-    implementation ("com.airbnb.android:lottie:latest_version")
-
-    // for navigation drawer
+    // Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.3")
+    implementation(libs.play.services.location)
 
-    // for onBoarding nav bar
-    implementation("com.tbuonomo:dotsindicator:5.0")
+    // Room
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
-    // for Retrofit
+    // Lifecycle components
+    val archLifecycleVersion = "2.6.1"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$archLifecycleVersion")
+
+    // Glide and Picasso
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    ksp("com.github.bumptech.glide:compiler:4.15.1")
+    implementation("com.squareup.picasso:picasso:2.8")
+
+    // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
-    // for room ksp
-    implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
-
-    // View model
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-
-    // for glide
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
-
-    // for picasso
-    implementation("com.squareup.picasso:picasso:2.8")
-
-    // Kotlin + coroutines
-    val work_version = "2.9.1"
-    implementation("androidx.work:work-runtime-ktx:$work_version")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
+    // Coroutines
+    val coroutinesVersion = "1.5.0"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 
-    // for map OSM
-    implementation ("org.osmdroid:osmdroid-android:6.1.12")
+    // Other libraries for the main app
+    implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.22")
+    implementation("org.osmdroid:osmdroid-android:6.1.12")
+    implementation("com.airbnb.android:lottie:6.1.0")
+    implementation("com.tbuonomo:dotsindicator:5.0")
+
+    // Timber for logging
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
+    // Testing libraries
+    val junitVersion = "4.13.2"
+    val hamcrestVersion = "2.2"
+    val archTestingVersion = "2.1.0"
+    val androidXTestCoreVersion = "1.4.0"
+    val androidXTestExtKotlinRunnerVersion = "1.1.5"
+    val espressoVersion = "3.5.1"
+    val robolectricVersion = "4.8"
+
+    testImplementation("junit:junit:$junitVersion")
+    testImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
+    testImplementation("org.hamcrest:hamcrest-library:$hamcrestVersion")
+    androidTestImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
+    androidTestImplementation("org.hamcrest:hamcrest-library:$hamcrestVersion")
+    testImplementation("androidx.arch.core:core-testing:$archTestingVersion")
+    testImplementation("org.robolectric:robolectric:$robolectricVersion")
+    testImplementation("androidx.test:core-ktx:$androidXTestCoreVersion")
+    testImplementation("androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion")
+    androidTestImplementation("androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion")
+    androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
 }

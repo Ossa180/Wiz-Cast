@@ -16,9 +16,9 @@ import java.io.IOException
 class WeatherRepository(
     private val remoteDataSource: WeatherRemoteDataSource,
     private val localDataSource: WeatherLocalDataSource
-) {
+) : IWeatherRepository {
     // Fetch weather data as a Flow, emitting different states
-    fun fetchWeather(lat: Double, lon: Double, appid: String, units: String, lang: String): Flow<WeatherState> = flow {
+    override fun fetchWeather(lat: Double, lon: Double, appid: String, units: String, lang: String): Flow<WeatherState> = flow {
         emit(WeatherState.Loading) // Emit loading state
         val response = remoteDataSource.fetchWeather(lat, lon, appid, units, lang)
 
@@ -38,7 +38,7 @@ class WeatherRepository(
         emit(WeatherState.Error("An error occurred: ${exception.localizedMessage}"))
     }
 
-    fun fetchFiveDayForecast(lat: Double, lon: Double, apiKey: String, units: String, lang: String): Flow<FiveDayForecastState> = flow {
+    override fun fetchFiveDayForecast(lat: Double, lon: Double, apiKey: String, units: String, lang: String): Flow<FiveDayForecastState> = flow {
         emit(FiveDayForecastState.Loading) // Emit loading state
         val response = remoteDataSource.fetchFiveDayForecast(lat, lon, apiKey,units, lang)
 
@@ -54,13 +54,13 @@ class WeatherRepository(
     }
 
     // Local data source functions
-    fun getFavoriteLocations(): Flow<List<FavoriteLocation>> = localDataSource.getFavoriteLocations()
+    override fun getFavoriteLocations(): Flow<List<FavoriteLocation>> = localDataSource.getFavoriteLocations()
 
-    suspend fun addFavoriteLocation(location: FavoriteLocation) {
+    override suspend fun addFavoriteLocation(location: FavoriteLocation) {
         localDataSource.saveFavoriteLocation(location)
     }
 
-    suspend fun removeFavoriteLocation(lat: Double, lon: Double){
+    override suspend fun removeFavoriteLocation(lat: Double, lon: Double){
         localDataSource.deleteFavoriteLocation(lat, lon)
     }
 

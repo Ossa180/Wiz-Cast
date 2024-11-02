@@ -39,7 +39,7 @@ class MapFragment : Fragment() {
         binding.mapView.setBuiltInZoomControls(true)
         binding.mapView.setMultiTouchControls(true)
 
-        // Retrieve latitude and longitude passed from other fragments
+        // Retrieve latitude and longitude passed
         val lat = arguments?.getDouble("LATITUDE") ?: 0.0
         val lon = arguments?.getDouble("LONGITUDE") ?: 0.0
         setMapLocation(lat, lon)
