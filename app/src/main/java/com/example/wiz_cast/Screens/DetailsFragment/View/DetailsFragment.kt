@@ -32,6 +32,7 @@ import com.example.wiz_cast.Screens.HomeScreen.View.HourlyAdapter
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModel
 import com.example.wiz_cast.Screens.HomeScreen.ViewModel.HomeViewModelFactory
 import com.example.wiz_cast.Utils.LocationHelper
+import com.example.wiz_cast.Utils.PreferencesHelper
 import com.example.wiz_cast.databinding.FiveDaysDialogBinding
 import com.example.wiz_cast.databinding.FragmentDetailsBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -94,18 +95,6 @@ class DetailsFragment : Fragment() {
 
         // Initial check to see if location is already a favorite
         checkIfFavorite()
-//        binding.cbHeart.setOnCheckedChangeListener { _, isChecked ->
-//            latitude?.let { lat ->
-//                longitude?.let { lon ->
-//                    if (isChecked) {
-//                        saveLocationToFavorites(lat, lon)
-//                    } else {
-//                        removeLocationFromFavorites(lat, lon)
-//                    }
-//                    checkIfFavorite() // Refresh checkbox state after update
-//                }
-//            }
-//        }
     }
     // Define listener separately for easier management
     private val heartCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
@@ -170,22 +159,49 @@ class DetailsFragment : Fragment() {
     }
 
     private fun updateUI(weather: CurrentWeather) {
+        // Initialize PreferencesHelper to access user settings
+        val preferencesHelper = PreferencesHelper(requireContext())
+        val units = preferencesHelper.getUnits()
+
         binding.tvDesc.text = weather.weather[0].description
         val weatherIconResId = getCustomIconForWeather(weather.weather[0].icon)
         binding.imgIcon.setImageResource(weatherIconResId)
-        binding.tvTemp.text = "${weather.main.temp}°"
-        binding.tvPressure.text = "${weather.main.pressure}"
+
+
+        val temperatureUnit = when (units) {
+            "standard" -> "K"    // Kelvin
+            "metric" -> "°C"     // Celsius
+            "imperial" -> "°F"   // Fahrenheit
+            else -> "K"           // Default case
+        }
+
+        // Display temperature with the correct unit
+        val temperature = weather.main.temp.toInt()
+        binding.tvTemp.text = "$temperature$temperatureUnit"
+
+        // Pressure is always in hPa
+        binding.tvPressure.text = "${weather.main.pressure} hPa"
         binding.tvHumidity.text = "${weather.main.humidity}%"
+
         binding.tvClouds.text = "${weather.clouds.all}%"
-        binding.tvWind.text = "${weather.wind.speed}m/s"
+
+        // Determine the wind speed unit
+        val windSpeedUnit = when (units) {
+            "standard", "metric" -> "m/s"   // Meters per second
+            "imperial" -> "mph"             // Miles per hour
+            else -> ""
+        }
+
+
+        binding.tvWind.text = "${weather.wind.speed} $windSpeedUnit"
+
         binding.tvSunRise.text = "Sunrise: ${formatUnixTime(weather.sys.sunrise, weather.timezone)}"
         binding.tvSunSet.text = "Sunset: ${formatUnixTime(weather.sys.sunset, weather.timezone)}"
+
         binding.tvCity.text = weather.name
         binding.tvTime.text = formatTimeFromTimezone(weather.timezone)
-        binding.tvDate.text = "${
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-            Date()
-        )}"
+
+        binding.tvDate.text = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
         // Fetch the city name using reverse geocoding
         fetchCityName(weather.coord.lat, weather.coord.lon)

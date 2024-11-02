@@ -166,17 +166,17 @@ class HomeFragment : Fragment() {
         val weatherIconResId = getCustomIconForWeather(weather.weather[0].icon)
         binding.imgIcon.setImageResource(weatherIconResId)
 
-        // Determine the temperature unit symbol
+
         val temperatureUnit = when (units) {
             "standard" -> "K"    // Kelvin
             "metric" -> "°C"     // Celsius
             "imperial" -> "°F"   // Fahrenheit
-            else -> ""           // Default case (shouldn't occur)
+            else -> "K"           // Default case
         }
 
         // Display temperature with the correct unit
         val temperature = weather.main.temp.toInt()
-        binding.tvTemp.text = "$temperature $temperatureUnit"
+        binding.tvTemp.text = "$temperature$temperatureUnit"
 
         // Pressure is always in hPa
         binding.tvPressure.text = "${weather.main.pressure} hPa"
@@ -191,14 +191,14 @@ class HomeFragment : Fragment() {
             else -> ""
         }
 
-        // Display wind speed with the correct unit
+
         binding.tvWind.text = "${weather.wind.speed} $windSpeedUnit"
 
         binding.tvSunRise.text = "Sunrise: ${formatUnixTime(weather.sys.sunrise, weather.timezone)}"
         binding.tvSunSet.text = "Sunset: ${formatUnixTime(weather.sys.sunset, weather.timezone)}"
 
         binding.tvCity.text = weather.name
-        binding.tvTime.text = formatTimeFromTimezone(weather.timezone)
+       // binding.tvTime.text = formatTimeFromTimezone(weather.timezone)
 
         binding.tvDate.text = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 

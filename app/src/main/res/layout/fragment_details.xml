@@ -36,7 +36,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-
         <TextView
             android:id="@+id/tvCity"
             android:layout_width="wrap_content"
@@ -44,7 +43,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/city"
             android:textColor="#FFFFFF"
-            android:textSize="18sp"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="@+id/textView3"
             app:layout_constraintHorizontal_bias="0.555"
             app:layout_constraintStart_toStartOf="@+id/textView3"
@@ -57,7 +56,7 @@
             android:layout_marginStart="8dp"
             android:text="TextView"
             android:textColor="#FFFFFF"
-            android:textSize="96sp"
+            android:textSize="86sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/textView3"
             app:layout_constraintHorizontal_bias="0.447"
@@ -333,8 +332,8 @@
 
         <CheckBox
             android:id="@+id/cbHeart"
-            android:layout_width="56dp"
-            android:layout_height="60dp"
+            android:layout_width="61dp"
+            android:layout_height="67dp"
             android:layout_marginTop="92dp"
             android:layout_marginEnd="4dp"
             android:button="@drawable/selector_wishlist_item"

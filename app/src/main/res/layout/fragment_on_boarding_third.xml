@@ -13,7 +13,7 @@
         android:id="@+id/tvFinish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="25dp"
         android:fontFamily="@font/alegreya_extrabold"
         android:text="@string/finish"
         android:textColor="#FFFFFF"
