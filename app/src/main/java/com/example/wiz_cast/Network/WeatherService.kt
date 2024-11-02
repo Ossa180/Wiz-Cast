@@ -33,4 +33,10 @@ interface WeatherService {
         @Query("lang") lang: String
 
     ): Response<FiveDaysWeather>
+
+    @GET("data/2.5/weather")
+    suspend fun getCityWeather(
+        @Query("q") cityName: String,
+        @Query("appid") apiKey: String
+    ): Response<CurrentWeather>
 }

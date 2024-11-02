@@ -3,115 +3,138 @@ package com.example.wiz_cast.Screens.MapScreen.View
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.wiz_cast.R
 import com.example.wiz_cast.databinding.FragmentMapBinding
-import com.google.android.material.search.SearchBar
+import com.example.wiz_cast.Network.RetrofitHelper
+import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import androidx.navigation.fragment.findNavController
-
+import java.net.URLEncoder
 
 class MapFragment : Fragment() {
 
     private lateinit var binding: FragmentMapBinding
     private lateinit var gestureDetector: GestureDetector
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // Configure a relevant user agent
-        Configuration.getInstance().userAgentValue = BuildConfig.LIBRARY_PACKAGE_NAME
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         binding = FragmentMapBinding.inflate(inflater, container, false)
 
-        // Initialize the map
         binding.mapView.setTileSource(TileSourceFactory.MAPNIK)
         binding.mapView.setBuiltInZoomControls(true)
         binding.mapView.setMultiTouchControls(true)
 
-        // Retrieve passed latitude and longitude
+        // Retrieve latitude and longitude passed from other fragments
         val lat = arguments?.getDouble("LATITUDE") ?: 0.0
         val lon = arguments?.getDouble("LONGITUDE") ?: 0.0
-
-        // Set map center and add marker
         setMapLocation(lat, lon)
-        Log.d("***** MAPLOCATION *****", " $lat, $lon")
 
-        // Set up the GestureDetector for tap events
-        gestureDetector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
-            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                handleMapClick(e)
-                return true // event has been handled
+        // Set up the SearchView for city search
+        binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { searchCity(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
             }
         })
 
-        // Set the touch listener for the map
+        gestureDetector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                handleMapClick(e)
+                return true
+            }
+        })
+
         binding.mapView.setOnTouchListener { _, event ->
-            // Pass all touch events to the GestureDetector
             gestureDetector.onTouchEvent(event)
-            // Return false to let the map handle other gestures (like zoom and pan)
             false
         }
 
         return binding.root
     }
 
-    private fun handleMapClick(event: MotionEvent) {
-        // Get the coordinates of the tap
-        val geoPoint = binding.mapView.projection.fromPixels(event.x.toInt(), event.y.toInt())
-        val lat = geoPoint.latitude
-        val lon = geoPoint.longitude
+    private fun searchCity(cityName: String) {
+        val apiKey = getString(R.string.api_key)
+        val encodedCityName = URLEncoder.encode(cityName, "UTF-8")
+        Log.d("API Request", "Requesting URL: https://api.openweathermap.org/data/2.5/weather?q=$encodedCityName&appid=$apiKey")
 
-        // Log the tapped location
-        Log.d("Map Click", "Tapped location: Latitude = $lat, Longitude = $lon")
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitHelper.apiService.getCityWeather(encodedCityName, apiKey)
+                Log.d("API Response", "Response: $response") // Add logging for response
+                if (response.isSuccessful) {
+                    response.body()?.coord?.let { coord ->
+                        Log.d("City Coordinates", "Latitude: ${coord.lat}, Longitude: ${coord.lon}")
+                        navigateToDetailsFragment(coord.lat, coord.lon)
+                    }
+                } else {
+                    Log.e("API Error", "Response code: ${response.code()}, message: ${response.message()}")
+                    Toast.makeText(requireContext(), "City not found.", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e("MapFragment", "Error in searchCity: ${e.message}", e)
+                Toast.makeText(requireContext(), "Failed to search city: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
-        // Navigate to HomeFragment with selected location
+    private fun navigateToDetailsFragment(latitude: Double, longitude: Double) {
+        Log.d("Navigation", "Navigating to DetailsFragment with Latitude: $latitude, Longitude: $longitude")
         val bundle = Bundle().apply {
-            putDouble("LATITUDE", lat)
-            putDouble("LONGITUDE", lon)
+            putDouble("LATITUDE", latitude)
+            putDouble("LONGITUDE", longitude)
         }
         findNavController().navigate(R.id.action_mapFragment_to_detailsFragment, bundle)
     }
 
+
+    private fun handleMapClick(event: MotionEvent) {
+        val geoPoint = binding.mapView.projection.fromPixels(event.x.toInt(), event.y.toInt())
+        val lat = geoPoint.latitude
+        val lon = geoPoint.longitude
+        Log.d("Map Click", "Tapped location: Latitude = $lat, Longitude = $lon")
+        navigateToDetailsFragment(lat, lon)
+    }
+
     private fun setMapLocation(latitude: Double, longitude: Double) {
         val mapController = binding.mapView.controller
-        mapController.setZoom(15.0) // Adjust zoom level as needed
-
+        mapController.setZoom(15.0)
         val startPoint = GeoPoint(latitude, longitude)
         mapController.setCenter(startPoint)
 
-        // Add a marker on the map
         val marker = Marker(binding.mapView)
         marker.position = startPoint
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         marker.title = "Your Location"
         binding.mapView.overlays.add(marker)
-
-        binding.mapView.invalidate() // Refresh the map
+        binding.mapView.invalidate()
     }
 
     override fun onResume() {
         super.onResume()
-        binding.mapView.onResume() // Important for the map to work correctly
+        binding.mapView.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        binding.mapView.onPause() // Important for the map to work correctly
+        binding.mapView.onPause()
     }
-
 }
