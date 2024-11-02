@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wiz_cast.Model.Pojo.Item0
 import com.example.wiz_cast.R
+import com.example.wiz_cast.Utils.PreferencesHelper
 import com.example.wiz_cast.databinding.MoreDaysCardBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,16 +32,31 @@ class DialogAdapter(private val forecastList: List<Item0>) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(forecast: Item0) {
+            val preferencesHelper = PreferencesHelper(binding.root.context)
+            val units = preferencesHelper.getUnits()
+
             val dateFormat = SimpleDateFormat("EEE, MMM d", Locale.getDefault())
             val date = dateFormat.format(SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(forecast.dt_txt))
-
             binding.tvCardDate.text = date
-            binding.tvCardTemp.text = "${forecast.main.temp}°C"
+
+            // Determine the temperature unit symbol and convert if needed
+            val temperatureUnit = when (units) {
+                "standard" -> "K"    // Kelvin
+                "metric" -> "°C"     // Celsius
+                "imperial" -> "°F"   // Fahrenheit
+                else -> ""
+            }
+
+            // Convert temperature to integer and display with unit symbol
+            val temperature = forecast.main.temp.toInt()  // Convert temperature to integer
+            binding.tvCardTemp.text = "$temperature $temperatureUnit"
 
             val weatherIconResId = getCustomIconForWeather(forecast.weather[0].icon)
             binding.imgCardIcon.setImageResource(weatherIconResId)
         }
     }
+
+
 
     private fun getCustomIconForWeather(iconCode: String): Int {
         return when (iconCode) {

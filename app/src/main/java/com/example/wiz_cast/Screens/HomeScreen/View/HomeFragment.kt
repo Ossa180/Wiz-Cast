@@ -158,16 +158,41 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateUI(weather: CurrentWeather) {
+        // Initialize PreferencesHelper to access user settings
+        val preferencesHelper = PreferencesHelper(requireContext())
+        val units = preferencesHelper.getUnits()
+
         binding.tvDesc.text = weather.weather[0].description
         val weatherIconResId = getCustomIconForWeather(weather.weather[0].icon)
         binding.imgIcon.setImageResource(weatherIconResId)
 
-        binding.tvTemp.text = "${weather.main.temp}°"
-        binding.tvPressure.text = "${weather.main.pressure}"
+        // Determine the temperature unit symbol
+        val temperatureUnit = when (units) {
+            "standard" -> "K"    // Kelvin
+            "metric" -> "°C"     // Celsius
+            "imperial" -> "°F"   // Fahrenheit
+            else -> ""           // Default case (shouldn't occur)
+        }
+
+        // Display temperature with the correct unit
+        val temperature = weather.main.temp.toInt()
+        binding.tvTemp.text = "$temperature $temperatureUnit"
+
+        // Pressure is always in hPa
+        binding.tvPressure.text = "${weather.main.pressure} hPa"
         binding.tvHumidity.text = "${weather.main.humidity}%"
 
         binding.tvClouds.text = "${weather.clouds.all}%"
-        binding.tvWind.text = "${weather.wind.speed}m/s"
+
+        // Determine the wind speed unit
+        val windSpeedUnit = when (units) {
+            "standard", "metric" -> "m/s"   // Meters per second
+            "imperial" -> "mph"             // Miles per hour
+            else -> ""
+        }
+
+        // Display wind speed with the correct unit
+        binding.tvWind.text = "${weather.wind.speed} $windSpeedUnit"
 
         binding.tvSunRise.text = "Sunrise: ${formatUnixTime(weather.sys.sunrise, weather.timezone)}"
         binding.tvSunSet.text = "Sunset: ${formatUnixTime(weather.sys.sunset, weather.timezone)}"
@@ -175,13 +200,12 @@ class HomeFragment : Fragment() {
         binding.tvCity.text = weather.name
         binding.tvTime.text = formatTimeFromTimezone(weather.timezone)
 
-        binding.tvDate.text = "${SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-            Date()
-        )}"
+        binding.tvDate.text = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
         // Fetch the city name using reverse geocoding
         fetchCityName(weather.coord.lat, weather.coord.lon)
     }
+
 
     // for sunrise and sunset  coversion
     private fun formatUnixTime(unixTime: Int, timezoneOffset: Int): String {
