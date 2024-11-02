@@ -27,6 +27,8 @@ import com.example.wiz_cast.Utils.ConnectivityReceiver
 import com.example.wiz_cast.databinding.FragmentFavoriteBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 
 
 class FavoriteFragment : Fragment() {
@@ -85,6 +87,30 @@ class FavoriteFragment : Fragment() {
             adapter = favoriteAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
+
+        // Set up ItemTouchHelper for swipe-to-delete functionality
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false // We don't need move functionality
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // Get the position of the item to delete
+                val position = viewHolder.adapterPosition
+                val locationToDelete = favoriteAdapter.currentList[position]
+
+                // Remove the item from ViewModel
+                viewModel.removeFavoriteLocation(locationToDelete.latitude, locationToDelete.longitude)
+                Toast.makeText(requireContext(), "Item deleted", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        // Attach ItemTouchHelper to the RecyclerView
+        itemTouchHelper.attachToRecyclerView(binding.rvFav)
     }
 
     private fun observeFavoriteLocations() {
