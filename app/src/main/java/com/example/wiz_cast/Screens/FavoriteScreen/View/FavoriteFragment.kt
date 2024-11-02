@@ -60,6 +60,10 @@ class FavoriteFragment : Fragment() {
         }
         val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         requireContext().registerReceiver(connectivityReceiver, filter)
+        binding.btnGoToMap.setOnClickListener {
+
+            findNavController().navigate(R.id.action_favoriteFragment_to_mapFragment)
+        }
     }
 
     private fun setupViewModel() {
