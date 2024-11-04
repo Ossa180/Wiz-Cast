@@ -1,8 +1,12 @@
 package com.example.wiz_cast.Screens.FavoriteScreen.View
 
+import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +33,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 
 
 class FavoriteFragment : Fragment() {
@@ -112,6 +117,13 @@ class FavoriteFragment : Fragment() {
         // Attach ItemTouchHelper to the RecyclerView
         itemTouchHelper.attachToRecyclerView(binding.rvFav)
     }
+    private fun checkNetworkAvailability(): Boolean {
+        // Manually check network availability to ensure it’s up-to-date
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
 
     private fun observeFavoriteLocations() {
         lifecycleScope.launch {
@@ -122,6 +134,9 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun onFavoriteItemClick(location: FavoriteLocation) {
+        // Check network availability
+        isNetworkAvailable = checkNetworkAvailability()
+
         if (isNetworkAvailable) {
             // Navigate to DetailsFragment with lat/lon data
             val bundle = Bundle().apply {
@@ -130,7 +145,13 @@ class FavoriteFragment : Fragment() {
             }
             findNavController().navigate(R.id.action_favoriteFragment_to_detailsFragment, bundle)
         } else {
-            Toast.makeText(requireContext(), "No network connection. Please check your connection.", Toast.LENGTH_SHORT).show()
+            // Show Snackbar with action to open Wi-Fi settings
+            Snackbar.make(binding.root, "No network connection", Snackbar.LENGTH_LONG)
+                .setAction("Enable Wi-Fi") {
+                    val intent = Intent(Settings.ACTION_WIFI_SETTINGS)
+                    startActivity(intent)
+                }
+                .show()
         }
     }
 
