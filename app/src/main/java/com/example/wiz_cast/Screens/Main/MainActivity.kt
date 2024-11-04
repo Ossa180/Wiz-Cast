@@ -1,4 +1,4 @@
-package com.example.wiz_cast
+package com.example.wiz_cast.Screens.Main
 
 import android.content.Context
 import android.os.Bundle
@@ -6,6 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.wiz_cast.R
 import com.example.wiz_cast.Utils.PreferencesHelper
 import java.util.Locale
 

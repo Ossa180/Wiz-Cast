@@ -100,7 +100,7 @@ class FavoriteFragment : Fragment() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                return false // We don't need move functionality
+                return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -114,7 +114,7 @@ class FavoriteFragment : Fragment() {
             }
         })
 
-        // Attach ItemTouchHelper to the RecyclerView
+        // Attach ItemTouchHelper to the RecyclerView to delete items
         itemTouchHelper.attachToRecyclerView(binding.rvFav)
     }
     private fun checkNetworkAvailability(): Boolean {

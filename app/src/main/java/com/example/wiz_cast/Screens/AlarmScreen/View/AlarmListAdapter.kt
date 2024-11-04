@@ -12,7 +12,10 @@ import java.util.Date
 import java.util.Locale
 
 // mutable to be dynamically updated
-class AlarmListAdapter(private var alarmList: MutableList<Alarm>) : RecyclerView.Adapter<AlarmListAdapter.AlarmViewHolder>() {
+class AlarmListAdapter(
+    private var alarmList: MutableList<Alarm>,
+    private val onAlarmClick: (Alarm) -> Unit // Add this parameter
+) : RecyclerView.Adapter<AlarmListAdapter.AlarmViewHolder>() {
 
     class AlarmViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val dateTimeTextView: TextView = view.findViewById(R.id.date_time_alarm)
@@ -30,6 +33,11 @@ class AlarmListAdapter(private var alarmList: MutableList<Alarm>) : RecyclerView
         val date = Date(alarm.timeInMillis)
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         holder.dateTimeTextView.text = dateFormat.format(date)
+
+        // Set click listener to show dialog for delete confirmation
+        holder.itemView.setOnClickListener {
+            onAlarmClick(alarm) // Call the onAlarmClick lambda when item is clicked
+        }
     }
 
     override fun getItemCount(): Int = alarmList.size
@@ -41,3 +49,4 @@ class AlarmListAdapter(private var alarmList: MutableList<Alarm>) : RecyclerView
         notifyDataSetChanged()
     }
 }
+

@@ -6,9 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
-import com.example.wiz_cast.ActivityHome
-import com.example.wiz_cast.R
+import com.example.wiz_cast.Screens.Main.ActivityHome
 import com.example.wiz_cast.databinding.FragmentOnBoardingThirdBinding
 
 class OnBoardingThirdFragment : Fragment() {

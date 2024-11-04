@@ -18,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.wiz_cast.Model.Alarm.Alarm
@@ -58,9 +59,36 @@ class AlarmFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        alarmListAdapter = AlarmListAdapter(mutableListOf())
+        // Pass a lambda to handle clicks on alarms
+        alarmListAdapter = AlarmListAdapter(mutableListOf()) { alarm ->
+            showDeleteConfirmationDialog(alarm)
+        }
         binding.recyclerViewAlarms.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewAlarms.adapter = alarmListAdapter
+    }
+
+    private fun showDeleteConfirmationDialog(alarm: Alarm) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Alarm")
+            .setMessage("Are you sure you want to delete this alarm?")
+            .setPositiveButton("Delete") { _, _ ->
+                deleteAlarm(alarm)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun deleteAlarm(alarm: Alarm) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val db = WeatherDatabase.getInstance(requireContext())
+            db.alarmDao().deleteAlarm(alarm.id)
+            val updatedAlarms = db.alarmDao().getAllAlarms()
+
+            withContext(Dispatchers.Main) {
+                alarmListAdapter.setData(updatedAlarms)
+                Toast.makeText(requireContext(), "Alarm deleted", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun removeExpiredAlarmsAndLoad() {

@@ -1,18 +1,15 @@
-package com.example.wiz_cast
+package com.example.wiz_cast.Screens.Main
 
 import android.content.Context
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.wiz_cast.R
 import com.example.wiz_cast.Utils.PreferencesHelper
 import com.example.wiz_cast.databinding.ActivityHomeBinding
 import java.util.Locale
