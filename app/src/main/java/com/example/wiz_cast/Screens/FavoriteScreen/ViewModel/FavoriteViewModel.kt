@@ -4,6 +4,7 @@ import WeatherLocalDataSource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wiz_cast.Model.DataBase.FavoriteLocation
+import com.example.wiz_cast.Model.Repository.IWeatherRepository
 import com.example.wiz_cast.Model.Repository.WeatherRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class FavoriteViewModel(
-    private val repository: WeatherRepository
+    private val repository: IWeatherRepository // for testing
 ) : ViewModel() {
 
     private val _favoriteLocationsState = MutableStateFlow<List<FavoriteLocation>>(emptyList())
