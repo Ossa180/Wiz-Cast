@@ -40,7 +40,7 @@
     </fragment>
     <fragment
         android:id="@+id/settingFragment"
-        android:name="com.example.wiz_cast.SettingFragment"
+        android:name="com.example.wiz_cast.Screens.Settings.SettingFragment"
         android:label="@string/setting"
         tools:layout="@layout/fragment_setting">
         <action

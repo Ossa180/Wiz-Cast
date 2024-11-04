@@ -55,6 +55,8 @@ class HomeFragment : Fragment() {
     private lateinit var dialog : BottomSheetDialog
     private lateinit var locationHelper: LocationHelper
     lateinit var weatherDao: WeatherDao
+    private var isNetworkAvailable = false
+    private var isDataFetched = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -94,13 +96,35 @@ class HomeFragment : Fragment() {
         val factory = HomeViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
+        ////////////
 
-
-        // Register the connectivity receiver
-        connectivityReceiver = ConnectivityReceiver {
-            fetchLocationData()
+// Register the connectivity receiver
+        connectivityReceiver = ConnectivityReceiver { isConnected ->
+            if (isConnected) {
+                if (!isDataFetched) {
+                    fetchLocationData() // Fetch data if we are reconnecting and data hasn't been fetched
+                } else {
+                    Toast.makeText(requireContext(), "Reconnected to network.", Toast.LENGTH_SHORT).show()
+                }
+                isNetworkAvailable = true
+            } else {
+                Toast.makeText(requireContext(), "Lost network connection.", Toast.LENGTH_SHORT).show()
+                isNetworkAvailable = false
+            }
         }
         requireContext().registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+
+
+//        // Register the connectivity receiver
+//        connectivityReceiver = ConnectivityReceiver {
+//            if (!isNetworkAvailable) {
+//                // Only fetch data if there was previously no network
+//                fetchLocationData()
+//            }
+//            isNetworkAvailable = true // Update network state to available
+//        }
+//        requireContext().registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+
 
         binding.lottiecloudloading.setAnimation(R.raw.cloadloading)
         binding.lottiecloudloading.playAnimation()
@@ -110,25 +134,29 @@ class HomeFragment : Fragment() {
             viewModel.weatherState.collect { state ->
                 when (state) {
                     is WeatherState.Loading -> {
-                        Log.d("HomeFragment", "Loading weather data...")
+                        if (!isNetworkAvailable) {
+                            Toast.makeText(requireContext(), "No network connection. Please connect to fetch data.", Toast.LENGTH_SHORT).show()
+                        }
                         binding.lottiecloudloading.visibility = View.VISIBLE
                         binding.mainContentGroup.visibility = View.GONE
                     }
                     is WeatherState.Success -> {
-                        Log.d("HomeFragment", "Weather data received: ${state.weather}")
+                        isDataFetched = true
                         binding.lottiecloudloading.visibility = View.GONE
                         binding.mainContentGroup.visibility = View.VISIBLE
                         updateUI(state.weather)
                     }
                     is WeatherState.Error -> {
-                        Log.d("HomeFragment : Weather state: ", "Error: ${state.message}")
-                        Toast.makeText(requireContext(), "Failed to fetch weather: ${state.message}", Toast.LENGTH_SHORT).show()
+                        if (!isDataFetched) {
+                            Toast.makeText(requireContext(), "Failed to fetch weather. Check your connection.", Toast.LENGTH_SHORT).show()
+                        }
                         binding.lottiecloudloading.visibility = View.GONE
-                        binding.mainContentGroup.visibility = View.VISIBLE // show latest data
+                        binding.mainContentGroup.visibility = View.VISIBLE
                     }
                 }
             }
         }
+
         // Observe the *** fiveDayForecastState *** using StateFlow
         lifecycleScope.launch {
             viewModel.fiveDayForecastState.collect { state ->
@@ -156,6 +184,10 @@ class HomeFragment : Fragment() {
 //        viewModel.fetchWeather(lat = 40.7128, lon = -74.0060, appid = apiKey, units = "metric", lang = "en")
 //        viewModel.fetchFiveDayForecast(lat = 40.7128, lon = -74.0060, appid = apiKey, units = "metric", lang = "en")
     }
+
+
+
+
 
     private fun updateUI(weather: CurrentWeather) {
         // Initialize PreferencesHelper to access user settings

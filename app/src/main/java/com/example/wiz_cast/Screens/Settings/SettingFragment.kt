@@ -1,4 +1,4 @@
-package com.example.wiz_cast
+package com.example.wiz_cast.Screens.Settings
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.content.Context
 import android.content.res.Configuration
+import com.example.wiz_cast.R
 import java.util.Locale
 import com.example.wiz_cast.Utils.PreferencesHelper
 import com.example.wiz_cast.databinding.FragmentSettingBinding

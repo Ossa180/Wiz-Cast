@@ -6,11 +6,10 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 
-class ConnectivityReceiver(private val onNetworkAvailable: () -> Unit) : BroadcastReceiver() {
+class ConnectivityReceiver(private val onNetworkAvailable: (Boolean) -> Unit) : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (isNetworkAvailable(context)) {
-            onNetworkAvailable()
-        }
+        val isConnected = isNetworkAvailable(context)
+        onNetworkAvailable(isConnected) // Pass network status
     }
 
     private fun isNetworkAvailable(context: Context): Boolean {
