@@ -56,6 +56,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.3")
     implementation(libs.play.services.location)
+    testImplementation(libs.junit.jupiter)
 
     // Room
     val roomVersion = "2.6.1"
